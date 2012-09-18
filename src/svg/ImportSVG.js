@@ -68,8 +68,13 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'text':
 				item = this._importText(svg);
 				break;
-			default:
-			break;
+			case 'path':
+				item = this._importPath(svg);
+				break;
+			case 'polygon':
+			case 'polyline':
+				item = this._importPoly(svg);
+				break;
 		}
 		
 		return item;
@@ -169,13 +174,12 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes a svg text node (xml dom)
 	 * returns a PointText item
 	 */
-	_importText: function(svgText)
-	{
+	_importText: function(svgText) {
 		//TODO: Extend this for multiple values
-		var x	= svgText.x.baseVal.getItem(0).value || 0;
-		var y	= svgText.y.baseVal.getItem(0).value || 0;
-		//END:Todo
-		
+		var x = svgText.x.baseVal.getItem(0).value || 0;
+		var y = svgText.y.baseVal.getItem(0).value || 0;
+		//END:TODO
+
 		var dx; //character kerning
 		var dy; //character baseline
 		var rotate; //character rotation
@@ -186,6 +190,128 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var topLeft = new Point(x, y);
 		var text = new PointText(topLeft);
 		text.content = textContent;
+
 		return text;
+	},
+
+	/**
+	 * Creates a Path Paper.js item
+	 *
+	 * takes a svg path node (xml dom)
+	 * returns a Path item
+	 */
+	_importPath: function(svgPath) {
+		var path = new Path();
+		var segments = svgPath.pathSegList;
+		var segment;
+		var j;
+		var relativeToPoint;
+		var controlPoint;
+		var prevCommand;
+		for (var i = 0; i < segments.numberOfItems; ++i){
+			segment = segments.getItem(i);
+			switch (segment.pathSegType) {
+				case SVGPathSeg.PATHSEG_UNKNOWN:
+					break;
+				case SVGPathSeg.PATHSEG_CLOSEPATH:
+					path.closePath();
+					break;
+				case SVGPathSeg.PATHSEG_MOVETO_ABS:
+					path.moveTo([segment.x, segment.y]);
+					break;
+				case SVGPathSeg.PATHSEG_MOVETO_REL:
+					if (path.segments.length < 1) {
+						path.moveTo([segment.x, segment.y]);
+					} else {
+						path.moveBy([segment.x, segment.y]);
+					}
+					break;
+				case SVGPathSeg.PATHSEG_LINETO_ABS:
+				case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS:
+				case SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS:
+					path.lineTo([segment.x, segment.y]);
+					break;
+				case SVGPathSeg.PATHSEG_LINETO_REL:
+				case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL:
+				case SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL:
+					path.lineBy([segment.x, segment.y]);
+					break;
+				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
+				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL:
+					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) ? new Point(0, 0) : path.lastSegment.point;
+					path.cubicCurveTo(relativeToPoint.add([segment.x1, segment.y1]), relativeToPoint.add([segment.x2, segment.y2]), relativeToPoint.add([segment.x, segment.y]))
+					break;
+				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
+				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL:
+					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS) ? new Point(0, 0) : path.lastSegment.point;
+					path.quadraticCurveTo(relativeToPoint.add([segment.x1, segment.y1]), relativeToPoint.add([segment.x, segment.y]))
+					break;
+				case SVGPathSeg.PATHSEG_ARC_ABS:
+				case SVGPathSeg.PATHSEG_ARC_REL:
+					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_ARC_REL) ? new Point(0, 0) : path.lastSegment.point;
+					
+					//TODO:What?
+					break;
+				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
+				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
+					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS) ? new Point(0, 0) : path.lastSegment.point;
+					prevCommand = segments.getItem(i - 1);
+					controlPoint = new Point(prevCommand.x2, prevCommand.y2);
+					controlPoint = controlPoint.subtract([prevCommand.x, prevCommand.y]);
+					controlPoint = controlPoint.add(path.lastSegment.point);
+					controlPoint = path.lastSegment.point.subtract(controlPoint);
+					controlPoint = path.lastSegment.point.add(controlPoint);
+					path.cubicCurveTo(controlPoint, relativeToPoint.add([segment.x2, segment.y2]), relativeToPoint.add([segment.x, segment.y]));
+					break;
+				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS:
+				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
+					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS) ? new Point(0, 0) : path.lastSegment.point;
+					for (j = i; j >= 0; --j) {
+						prevCommand = segments.getItem(j);
+						if (prevCommand.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
+							prevCommand.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL
+						) {
+							controlPoint = new Point(prevCommand.x1, prevCommand.y1);
+							controlPoint = controlPoint.subtract([prevCommand.x, prevCommand.y]);
+							controlPoint = controlPoint.add(path.segments[j].point);
+							break;
+						}
+					}
+					for (j; j < i; ++j) {
+						controlPoint = path.segments[j].point.subtract(controlPoint);
+						controlPoint = path.segments[j].point.add(controlPoint);
+					}
+					path.quadraticCurveTo(controlPoint, relativeToPoint.add([segment.x, segment.y]));
+					break;
+			}
+		}
+
+		return path;
+	},
+
+	/**
+	 * Creates a Path Paper.js item
+	 *
+	 * takes either
+	 *   - svg polyline node (xml dom)
+	 *   - svg polygon node (xml dom)
+	 * returns a Path item
+	 */
+	_importPoly: function(svgPoly) {
+		var poly = new Path();
+		var points = svgPoly.points;
+		var start = points.getItem(0);
+		var point;
+		poly.moveTo([start.x, start.y]);
+		
+		for (var i = 1; i < points.length; ++i) {
+			point = points.getItem(i);
+			poly.lineTo([point.x, point.y]);
+		}
+		if (svgPoly.nodeName.toLowerCase() == 'polygon') {
+			poly.closePath();
+		}
+
+		return poly;
 	}
 });
