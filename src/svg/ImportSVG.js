@@ -76,7 +76,11 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				item = this._importPoly(svg);
 				break;
 		}
-		
+
+		if (item) {
+			this._importStyles(svg, item);
+		}
+
 		return item;
 	},
 
@@ -186,7 +190,6 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var textLength; //the width of the containing box
 		var lengthAdjust; //
 		var textContent = svgText.textContent || "";
-		
 		var topLeft = new Point(x, y);
 		var text = new PointText(topLeft);
 		text.content = textContent;
@@ -313,5 +316,93 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		}
 
 		return poly;
+	},
+
+	/**
+	 * Pulls various style attributes and applies them to item.
+	 * This method is destructive to item (changes happen to it)
+	 *
+	 * takes
+	 *   - a svg node (xml dom)
+	 *   - Paper.js Item
+	 */
+	_importStyles: function(svg, item) {
+		var name,
+			value;
+		for (var i = 0; i < svg.style.length; ++i) {
+			name = svg.style[i];
+			value = svg.style[name];
+			this._applyStyle(name, value, item);
+		}
+		for (var i = 0; i < svg.attributes.length; ++i) {
+			name = svg.attributes[i].name;
+			value = svg.attributes[i].value;
+			this._applyStyle(name, value, item);
+			console.log([name, value]);
+		}
+	},
+
+
+
+	//--------------------------------------
+	/**
+	 * Pulls a style attribute and applies it to item.
+	 * This method is destructive to item (changes happen to it)
+	 *
+	 * takes
+	 *   - a style name (e.g. stroke-width)
+	 *   - a style value (e.g. 2px)
+	 *   - Paper.js Item
+	 */
+	 _applyStyle: function(name, value, item) {
+		switch (name) {
+			case 'fill':
+				if (value != 'none') {
+					item.fillColor = value;
+				}
+				break;
+			case 'stroke':
+				if (value != 'none') {
+					item.strokeColor = value;
+				}
+				break;
+			case 'stroke-width':
+				item.strokeWidth = parseInt(value, 10);
+				break;
+			case 'stroke-linecap':
+				item.strokeCap = value;
+				break;
+			case 'stroke-linejoin':
+				item.strokeJoin = value;
+				break;
+			case 'stroke-dasharray':
+				value = value.replace(/px/g, '');
+				value = value.replace(/, /g, ',');
+				value = value.replace(/ /g, ',');
+				value = value.split(',');
+				for (var i in value) {
+					value[i] = parseInt(value[i], 10);
+				}
+				item.dashArray = value;
+				break;
+			case 'stroke-dashoffset':
+				item.dashOffset = parseInt(value, 10);
+				break;
+			case 'stroke-miterlimit':
+				item.miterLimit = parseInt(value, 10);
+				break;
+			// case 'clip':
+			// case 'clip-path':
+			// case 'clip-rule':
+			case 'font':
+			case 'font-family':
+			case 'font-size':
+			// case 'mask':
+			case 'opacity':
+				item.opacity = parseInt(value, 10);
+			case 'visibility':
+				item.visibility = (value == 'visible') ? true : false;
+				break;
+		}
 	}
 });
