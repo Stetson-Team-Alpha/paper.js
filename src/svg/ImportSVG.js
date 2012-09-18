@@ -13,8 +13,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes in a svg object (xml dom)
 	 * returns Paper.js Layer
 	 */
-	importSVG: function(svg)
-	{
+	importSVG: function(svg) {
 		var layer = new Layer();
 		groups = this.importGroup(svg);
 		layer.addChild(groups);
@@ -29,8 +28,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes in a svg object (xml dom)
 	 * returns Paper.js Group
 	 */
-	importGroup: function(svg)
-	{
+	importGroup: function(svg) {
 		var group = new Group();
 		var child;
 		for (var i in svg.childNodes) {
@@ -41,7 +39,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			item = this.importPath(child);
 			group.addChild(item);
 		}
-		
+
 		return group;
 	},
 
@@ -53,8 +51,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes in a svg object (xml dom)
 	 * returns Paper.js Item
 	 */
-	importPath: function(svg)
-	{
+	importPath: function(svg) {
 		switch (svg.nodeName.toLowerCase()) {
 			case 'line':
 				item = this._importLine(svg);
@@ -84,13 +81,12 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes a svg circle node (xml dom)
 	 * returns Paper.js Path.Circle item
 	 */
-	_importCircle: function(svgCircle)
-	{
-		var cx		= svgCircle.cx.baseVal.value || 0;
-		var cy		= svgCircle.cy.baseVal.value || 0;
-		var r		= svgCircle.r.baseVal.value || 0;
-		var center	= new Point(cx, cy);
-		var circle	= new Path.Circle(center, r);
+	_importCircle: function(svgCircle) {
+		var cx = svgCircle.cx.baseVal.value || 0;
+		var cy = svgCircle.cy.baseVal.value || 0;
+		var r = svgCircle.r.baseVal.value || 0;
+		var center = new Point(cx, cy);
+		var circle = new Path.Circle(center, r);
 
 		return circle;
 	},
@@ -101,20 +97,19 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes a svg ellipse node (xml dom)
 	 * returns Paper.js Path.Oval item
 	 */
-	_importOval: function(svgOval)
-	{
-		var cx			= svgOval.cx.baseVal.value || 0;
-		var cy			= svgOval.cy.baseVal.value || 0;
-		var rx			= svgOval.rx.baseVal.value || 0;
-		var ry			= svgOval.ry.baseVal.value || 0;
+	_importOval: function(svgOval) {
+		var cx = svgOval.cx.baseVal.value || 0;
+		var cy = svgOval.cy.baseVal.value || 0;
+		var rx = svgOval.rx.baseVal.value || 0;
+		var ry = svgOval.ry.baseVal.value || 0;
 
-		var center		= new Point(cx, cy);
-		var offset		= new Point(rx, ry);
-		var topLeft		= center.subtract(offset);
-		var bottomRight	= center.add(offset);
+		var center = new Point(cx, cy);
+		var offset = new Point(rx, ry);
+		var topLeft = center.subtract(offset);
+		var bottomRight = center.add(offset);
 
-		var rect		= new Rectangle(topLeft, bottomRight);
-		var oval		= new Path.Oval(rect);
+		var rect = new Rectangle(topLeft, bottomRight);
+		var oval = new Path.Oval(rect);
 
 		return oval;
 	},
@@ -127,18 +122,17 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - Path.Rectangle item
 	 *   - Path.RoundRectangle item (if the rectangle has rounded corners)
 	 */
-	_importRectangle: function(svgRectangle)
-	{
-		var x			= svgRectangle.x.baseVal.value || 0;
-		var y			= svgRectangle.y.baseVal.value || 0;
-		var rx			= svgRectangle.rx.baseVal.value || 0;
-		var ry			= svgRectangle.ry.baseVal.value || 0;
-		var width		= svgRectangle.width.baseVal.value || 0;
-		var height		= svgRectangle.height.baseVal.value || 0;
+	_importRectangle: function(svgRectangle) {
+		var x = svgRectangle.x.baseVal.value || 0;
+		var y = svgRectangle.y.baseVal.value || 0;
+		var rx = svgRectangle.rx.baseVal.value || 0;
+		var ry = svgRectangle.ry.baseVal.value || 0;
+		var width = svgRectangle.width.baseVal.value || 0;
+		var height = svgRectangle.height.baseVal.value || 0;
 
-		var topLeft		= new Point(x, y);
-		var size		= new Size(width, height);
-		var rectangle	= new Rectangle(topLeft, size);
+		var topLeft = new Point(x, y);
+		var size = new Size(width, height);
+		var rectangle = new Rectangle(topLeft, size);
 
 		if (rx > 0 || ry > 0) {
 			var cornerSize = new Size(rx, ry);
@@ -156,16 +150,15 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * takes a svg line node (xml dom)
 	 * returns a Path.Line item
 	 */
-	_importLine: function(svgLine)
-	{
-		var x1		= svgLine.x1.baseVal.value || 0;
-		var y1		= svgLine.y1.baseVal.value || 0;
-		var x2		= svgLine.x2.baseVal.value || 0;
-		var y2		= svgLine.y2.baseVal.value || 0;
+	_importLine: function(svgLine) {
+		var x1 = svgLine.x1.baseVal.value || 0;
+		var y1 = svgLine.y1.baseVal.value || 0;
+		var x2 = svgLine.x2.baseVal.value || 0;
+		var y2 = svgLine.y2.baseVal.value || 0;
 
-		var from	= new Point(x1, y1);
-		var to		= new Point(x2, y2);
-		var line	= new Path.Line(from, to);
+		var from = new Point(x1, y1);
+		var to = new Point(x2, y2);
+		var line = new Path.Line(from, to);
 
 		return line;
 	},
