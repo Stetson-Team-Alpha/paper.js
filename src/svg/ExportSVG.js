@@ -33,6 +33,10 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 * returns svg object (xml dom)
 	 */
     	exportProject: function(project){
+		var layerArray = project.layers;
+		for(int i=0; i < layerArray.length; i++){
+			this.exportLayer(layerArray[i]);
+		}
     		return svgObj;
     	};
 	
@@ -46,6 +50,7 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 * returns svg object (xml dom)
 	 */
     	exportLayer: function(layer){
+		
     		return svgObj;
 	};
 	
@@ -153,6 +158,9 @@ var ExportSVG = this.ExportSVG = Base.extend({
 		var hOY;
 		var dPoint12;
 		var dPoint34;
+		//SCOTT- for this loop, hIX, hIY, hOX and HOY just keep 
+		//getting reset. Like...they're only going to record the 
+		//information for the last segment.
 		for(i = 0; i < segArray.length; i++){
 			pointArray[i] = segArray[i].getPoint();
 			handleInArray[i] = segArray[i].getHandleIn();
