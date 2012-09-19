@@ -34,8 +34,9 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 */
     	exportProject: function(project){
 		var layerArray = project.layers;
+		var svgObj = document.createElements(NS, "svg");
 		for(int i=0; i < layerArray.length; i++){
-			this.exportLayer(layerArray[i]);
+			svgObj.appendChild(this.exportLayer(layerArray[i]));
 		}
     		return svgObj;
     	};
@@ -50,8 +51,31 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 * returns svg object (xml dom)
 	 */
     	exportLayer: function(layer){
-		
-    		return svgObj;
+		//not sure if this is the right method call,
+		//got it from our language lawyer, the "constructor" part
+		//could actually mean a real constructor. Will consult
+		//during team meeting tomorrow
+		var svgG = document.createElementNS(NS,"g");
+		var childArray = layer.children;
+		for(i = 0; i<childArray.length; i++){
+			var curChild = childArray[i];
+			switch(childArray[i].constructor.toString()){
+			case "Layer":
+				svgG.appendChild(this.exportLayer(curChild));
+				break;
+			case "Group":
+				svgG.appendChild(this.exportGroup(curchild));
+				break;
+			//case "Item":
+			//	svgG.appendChild(this.exportItem(curChild));
+			//	break
+			case "Path":
+				svgG.appendChild(this.exportPath(curChild));
+				break;
+			}
+
+		}
+    		return svgG;
 	};
 	
     
@@ -64,6 +88,21 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 * returns svg object (xml dom)
 	 */
     	exportGroup: function(group){
+		var svgG = document.createElementsNS(NS, "g");
+		var childArray = group.children;
+		for(int i=0; i<childArray.length; i++){
+			var curChild = childArray[i];
+			switch(childArray[i].constructor.toString()){
+			case "Group":
+				svgG.appendChild(this.exportGroup(curChild);
+				break;
+			//case "Item":
+			//	svgG.appendChild(this.exportItem(curChild);
+			//	break;
+			case "Path":
+				svgG.appendChild(this.exportPath(curChild);
+			}
+		}
     		return svgObj;
     	};
 	
@@ -76,6 +115,10 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 * returns svg object (xml dom)
 	 */
     	exportItem: function(item){
+		//after finally getting here, I don't think there's
+		//a need to export to Items. I could be wrong, but I think
+		// Item is just used for shared code. I'll bring it up at
+		// team meeting.
     		return svgObj;
     	};
     
