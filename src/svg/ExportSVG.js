@@ -151,6 +151,8 @@ var ExportSVG = this.ExportSVG = Base.extend({
 		var hIX;
 		var hOX;
 		var hOY;
+		var dPoint12;
+		var dPoint34;
 		for(i = 0; i < segArray.length; i++){
 			pointArray[i] = segArray[i].getPoint();
 			handleInArray[i] = segArray[i].getHandleIn();
@@ -159,16 +161,26 @@ var ExportSVG = this.ExportSVG = Base.extend({
 			hIY = handleInArray[i].getY();
 			hOX = handleOutArray[i].getX();
 			hOY = handleOutArray[i].getY();
-			
-			if(hIX === 0 && hIY === 0 && hOX === 0 && hOY === 0){
-				type = "rectangle"; //nested if statements for checking if a line, distances between points have to be equal for rectangle
+		}
+		dPoint12 = pointArray[0].getDistance(pointArray[1], true);
+		dPoint34 = pointArray[2].getDistance(pointArray[3], true);
+		if(hIX === 0 && hIY === 0 && hOX === 0 && hOY === 0){
+			if(dPoint12 === dPoint34){
+				type = "rectangle";
+			} else {
+				type = "line";
 			}
-			else if(hIX != 0 ||  hIY != 0 && Math.abs(hIY) === Math.abs(hOY) && Math.abs(hIX) === Math.abs(hOX)){
+		}
+		else if(hIX != 0 ||  hIY != 0 && Math.abs(hIY) === Math.abs(hOY) && Math.abs(hIX) === Math.abs(hOX)){
+			if(handleInArray[2].getY() === hOX && handleOutArray[2].getY() === hIX){
 				type = "circle";
+			} else{
+				type = "ellipse";
 			}
+		}
 			
 
-		}
+	}
    
     //initialize(); // calls the init function after class is loaded
 });
