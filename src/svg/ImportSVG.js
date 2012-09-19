@@ -211,64 +211,71 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var relativeToPoint;
 		var controlPoint;
 		var prevCommand;
+		var segmentTo;
 		for (var i = 0; i < segments.numberOfItems; ++i){
 			segment = segments.getItem(i);
+			if (segment.pathSegType == SVGPathSeg.PATHSEG_UNKNOWN) {
+				continue;
+			}
+			if (segment.pathSegType % 2 == 1 && path.segments.length > 0) {
+				relativeToPoint = path.lastSegment.point;
+			} else {
+				relativeToPoint = new Point(0, 0);
+			}
+			segmentTo = new Point(segment.x, segment.y);
+			segmentTo = segmentTo.add(relativeToPoint);
 			switch (segment.pathSegType) {
-				case SVGPathSeg.PATHSEG_UNKNOWN:
-					break;
 				case SVGPathSeg.PATHSEG_CLOSEPATH:
 					path.closePath();
 					break;
 				case SVGPathSeg.PATHSEG_MOVETO_ABS:
-					path.moveTo([segment.x, segment.y]);
-					break;
 				case SVGPathSeg.PATHSEG_MOVETO_REL:
-					if (path.segments.length < 1) {
-						path.moveTo([segment.x, segment.y]);
-					} else {
-						path.moveBy([segment.x, segment.y]);
-					}
+					path.moveTo(segmentTo);
 					break;
 				case SVGPathSeg.PATHSEG_LINETO_ABS:
 				case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS:
 				case SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS:
-					path.lineTo([segment.x, segment.y]);
-					break;
 				case SVGPathSeg.PATHSEG_LINETO_REL:
 				case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL:
 				case SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL:
-					path.lineBy([segment.x, segment.y]);
+					path.lineTo(segmentTo);
 					break;
 				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
 				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL:
-					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) ? new Point(0, 0) : path.lastSegment.point;
-					path.cubicCurveTo(relativeToPoint.add([segment.x1, segment.y1]), relativeToPoint.add([segment.x2, segment.y2]), relativeToPoint.add([segment.x, segment.y]))
+					path.cubicCurveTo(
+						relativeToPoint.add([segment.x1, segment.y1]),
+						relativeToPoint.add([segment.x2, segment.y2]),
+						segmentTo
+					);
 					break;
 				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
 				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL:
-					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS) ? new Point(0, 0) : path.lastSegment.point;
-					path.quadraticCurveTo(relativeToPoint.add([segment.x1, segment.y1]), relativeToPoint.add([segment.x, segment.y]))
+					path.quadraticCurveTo(
+						relativeToPoint.add([segment.x1, segment.y1]),
+						segmentTo
+					);
 					break;
 				case SVGPathSeg.PATHSEG_ARC_ABS:
 				case SVGPathSeg.PATHSEG_ARC_REL:
-					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_ARC_REL) ? new Point(0, 0) : path.lastSegment.point;
-					
-					//TODO:What?
+					//TODO: Implement Arcs. They're ugly.
+					//http://www.w3.org/TR/SVG/implnote.html
 					break;
 				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
 				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
-					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS) ? new Point(0, 0) : path.lastSegment.point;
 					prevCommand = segments.getItem(i - 1);
 					controlPoint = new Point(prevCommand.x2, prevCommand.y2);
 					controlPoint = controlPoint.subtract([prevCommand.x, prevCommand.y]);
 					controlPoint = controlPoint.add(path.lastSegment.point);
 					controlPoint = path.lastSegment.point.subtract(controlPoint);
 					controlPoint = path.lastSegment.point.add(controlPoint);
-					path.cubicCurveTo(controlPoint, relativeToPoint.add([segment.x2, segment.y2]), relativeToPoint.add([segment.x, segment.y]));
+					path.cubicCurveTo(
+						controlPoint,
+						relativeToPoint.add([segment.x2, segment.y2]),
+						segmentTo
+					);
 					break;
 				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS:
 				case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
-					relativeToPoint = (segment.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS) ? new Point(0, 0) : path.lastSegment.point;
 					for (j = i; j >= 0; --j) {
 						prevCommand = segments.getItem(j);
 						if (prevCommand.pathSegType == SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS ||
@@ -284,7 +291,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 						controlPoint = path.segments[j].point.subtract(controlPoint);
 						controlPoint = path.segments[j].point.add(controlPoint);
 					}
-					path.quadraticCurveTo(controlPoint, relativeToPoint.add([segment.x, segment.y]));
+					path.quadraticCurveTo(controlPoint, segmentTo);
 					break;
 			}
 		}
@@ -342,9 +349,6 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		}
 	},
 
-
-
-	//--------------------------------------
 	/**
 	 * Pulls a style attribute and applies it to item.
 	 * This method is destructive to item (changes happen to it)
