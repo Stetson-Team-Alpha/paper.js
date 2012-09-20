@@ -26,9 +26,7 @@ var ExportSVG = this.ExportSVG = Base.extend({
 		var layer;
 		for (var i = 0; i < layerArray.length; ++i) {
 			layer = layerArray[i];
-			this.svgObj.appendChild(
-				this.exportLayer(layer)
-			);
+			this.svgObj.appendChild(this.exportLayer(layer));
 		}
 		return this.svgObj;
 	},
@@ -129,8 +127,7 @@ var ExportSVG = this.ExportSVG = Base.extend({
 			}
 
 			svgPath.setAttribute("stroke-width",path.strokeWidth);
-			svgObj.appendChild(svgPath); //appends path to svgObj
-			return svgObj;
+			return svgPath;
 	},
 
 	//TRY TO BREAK THIS! FOR ANDREW
