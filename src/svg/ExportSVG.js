@@ -132,6 +132,14 @@ var ExportSVG = this.ExportSVG = Base.extend({
 				}
 				svgEle.setAttribute('points', pointString);
 				break;
+			case 'polygon':
+				svgEle = document.createElementNS(this.NS, 'polygon')
+				var pointString;
+				for(i = 0; i < pointArray.length; ++i) {
+					pointString += pointArray[i].getX() + ", " + pointArray[i].getY();
+				}
+				svgEle.setAttribute('points', pointString);
+				break;
 			default:
 				svgEle = document.createElementNS(this.NS, 'path');
 				//TODO add attributes to the path element
@@ -197,7 +205,11 @@ var ExportSVG = this.ExportSVG = Base.extend({
 				}
 			}
 		} else if (segArray.length >= 3 && handleInArray[0].getX() === 0 && handleInArray[0].getY() === 0 && handleOutArray[0].getX() === 0 && handleOutArray[0].getY() === 0) {
-			type = 'polyline';
+			if(path.getClosed()) {
+				type = 'polygon';
+			} else {
+				type = 'polyline';
+			}
 		} else {
 			type = 'line';
 		} 
