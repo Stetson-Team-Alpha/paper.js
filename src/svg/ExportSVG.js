@@ -197,7 +197,7 @@ var ExportSVG = this.ExportSVG = Base.extend({
 				y2 = pointArray[i + 1].getY();
 				handleOut1 = hOarray[i];
 				handleIn2 = hIarray[i+1];
-				if(handleOut1 == 0 && handleIn2 == 0){
+				if(handleOut1.getX() == 0 && handleOut1.getY() == 0 && handleIn2.getX() == 0 && handleIn2.getY() ==0) {
 					if (i == 0) {
 						//M is moveto, moving to a point without drawing
 						pointString+= 'M ' + x2 + ' ' + y2 + ' ';
