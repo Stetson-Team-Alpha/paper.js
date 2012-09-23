@@ -91,16 +91,27 @@ var ExportSVG = this.ExportSVG = Base.extend({
 			handleInArray[i] = segArray[i].getHandleIn();
 			handleOutArray[i] = segArray[i].getHandleOut();
 		}
+		//finding the type of path to export
 		var type = 'path' //this._checkType(segArray, pointArray, handleInArray, handleOutArray);
+		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
 			case 'rect':
 				svgEle = document.createElementNS(this.NS, 'rect');
-				svgEle.setAttribute('x', pointArray[0].getX());
-				svgEle.setAttribute('y', pointArray[0].getY());
+				svgEle.setAttribute('x', pointArray[1].getX());
+				svgEle.setAttribute('y', pointArray[1].getY());
 				svgEle.setAttribute('width', pointArray[1].getDistance(pointArray[2], true));
 				svgEle.setAttribute('height', pointArray[0].getDistance(pointArray[1], true));
-				//code for rest of rect here
-				//Rect still lacks rounded corners functionality. Necessary?
+				break;
+			case 'roundRect':
+				var rx = pointArray[4].getX() - pointArray[3].getX();
+				var ry = pointArray[3].getY() - pointArray[4].getY();
+				svgEle = document.createElementNS(this.NS, 'rect');
+				svgEle.setAttribute('x', pointArray[3].getX());
+				svgEle.setAttribute('y', pointArray[4].getY());
+				svgEle.setAttribute('rx', rx);
+				svgEle.setAttribute('ry'. ry);
+				svgEle.setAttribute('width', pointArray[1].getDistance(pointArray[6], true));
+				svgEle.setAttribute('height',pointArray[0].getDistance(pointArray[3], true));
 				break;
 			case'line':
 				svgEle = document.createElementNS(this.NS, 'line');
@@ -150,15 +161,24 @@ var ExportSVG = this.ExportSVG = Base.extend({
 				//svgEle = this.pathSetup(path);
 				break;
 		}
+
+		//checks if there is a stroke color in the passed in path
+		//adds an SVG element attribute with the defined stroke color 
 		if (path.strokeColor != undefined) {
 			svgEle.setAttribute('stroke', path.strokeColor.toCssString());
 		}
+
+		//same thing as above except checking for a fill color
 		if (path.fillColor != undefined) {
 			svgEle.setAttribute('fill', path.fillColor.toCssString());
 		}
+
+		//same thing as stroke color except with stroke width
 		if(path.strokeWidth != undefined){
 			svgEle.setAttribute('stroke-width', path.strokeWidth);
 		}
+
+		//same thing as stroke color exce[t with the path name
 		if(path.name != undefined) {
 			svgEle.setAttribute('name', path.name);
 		}
@@ -224,13 +244,11 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	//TRY TO BREAK THIS! FOR ANDREW
 	//Need to add path functionality
 	//UNEXPECTED IDENTIFIER HERE AS WELL. WHY?
-	/*_checkType: function(segArray) {
+	/*_checkType: function(segArray, pointArray, handleInArray, handleOutArray) {
 		var type;
 		var dPoint12;
 		var dPoint34;
-		dPoint12 = pointArray[0].getDistance(pointArray[1], true);
-		dPoint34 = pointArray[2].getDistance(pointArray[3], true);
-		var curves = false
+		var curves = false;	
 		var segHandleIn;
 		var segHandleOut;
 		for( var i in segArray){
@@ -244,8 +262,15 @@ var ExportSVG = this.ExportSVG = Base.extend({
 		//Cleaned up the logic so it's a little easier to read and includes path.
 		//Kept the old logic for reference. Also, I kept the really long logic lines in their correct
 		//places, because I couldn't figure them out completely.
+		//Checks for curves in the passed in segments
+		//Checks if the type of the passed in path is a rounded rectangle, an ellipse, a circle, or if it's simply a path
+		//If there aren't any curves (if curves = false), then it checks if the type is a rectangle, a polygon, a polyline, or simply a line.
 		if(curves){
-			if(segArray.length == 4) {
+			dPoint12 = pointArray[0].getDistance(pointArray[3], true);
+			dPoint34 = pointArray[4].getDistance(pointArray[7], true);
+			if(segArray.length == 8 && dPoint12 === dPoint34) {
+				type = 'roundRect';
+			} else if(segArray.length == 4) {
 				if(handleInArray[0].getX() != 0 || handleInArray[0].getY() != 0 && Math.abs(handleInArray[0].getX()) === Math.abs(handleOutArray[0].getX()) && Math.abs(handleInArray[0].getY()) === Math.abs(handleOutArray[0].getY())) {
 					if(handleInArray[3].getY() === handleOutArray[0].getX() && handleOutArray[3].getY() === handleInArray[0].getX()) {
 						type = 'circle';
@@ -258,8 +283,10 @@ var ExportSVG = this.ExportSVG = Base.extend({
 				type = 'path';
 			}
 		} else {
+			dPoint12 = pointArray[0].getDistance(pointArray[1], true);
+			dPoint34 = pointArray[2].getDistance(pointArray[3], true);
 			if(segArray.length == 4 && dPoint12 == dPoint34) {
-				type = 'rectangle';
+				type = 'rect';
 			} else if(segArray.length >= 3) {
 				if(path.getClosed()) {
 					type = 'polygon';
@@ -271,7 +298,7 @@ var ExportSVG = this.ExportSVG = Base.extend({
 			
 		}
 		
-		
+		//IGNORE THIS FOR NOW, WILL BE DETERMINED LATER IF NEEDED OR NOT
 		/*if(segArray.length == 4) {
 			if (!curves) {
 				if (dPoint12 == dPoint34) {
