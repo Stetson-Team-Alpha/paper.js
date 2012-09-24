@@ -1,10 +1,33 @@
-/**
- *  Exports items, layers or whole projects as a svg
- *  Stetson Alpha - Paper.js
- *  
+ /*
+ * Paper.js
+ *
+ * This file is part of Paper.js, a JavaScript Vector Graphics Library,
+ * based on Scriptographer.org and designed to be largely API compatible.
+ * http://paperjs.org/
+ * http://scriptographer.org/
+ *
+ * Copyright (c) 2011, Juerg Lehni & Jonathan Puckey
+ * http://lehni.org/ & http://jonathanpuckey.com/
+ *
+ * Distributed under the MIT license. See LICENSE file for details.
+ *
+ * All rights reserved.
+ * 
+ * This class and all methods therein programmed by Stetson-Team-Alpha
+ * @author Stetson-Team-Alpha
  */
 
-var ExportSVG = this.ExportSVG = Base.extend({
+
+ /**
+ * @name ExportSVG
+ *
+ * @class The ExportSVG object represents a Paper.js object that will be
+ * converted into an SVG canvas design.
+ * The Paper.js object is converted by changing its items into groups
+ *
+ */
+
+var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	//initialize the svgObj and what ever else.
 	initialize: function() {
 		this.NS = 'http://www.w3.org/2000/svg';
@@ -12,14 +35,14 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	},
 
 	/**
-	 * 
-	 * Takes the whole project and parses
-	 * all the layers to be put into svg groups and 
-	 * groups into svg groups making all the projects 
-	 * items into one svg.
-	 * 
-	 * takes in a Paper.js Project
-	 * returns svg object (xml dom)
+	 * Takes the selected Paper.js project and parses all of its layers and
+	 * groups to be placed into SVG groups, converting the project into one
+	 * SVG group.
+	 *
+	 * @function
+	 * @param {Paper.js Project} project A Paper.js project
+	 * @return {SVG DOM} this.svgObj The imported project converted to an
+	 * SVG project
 	 */
 	exportProject: function(project) {
 		var layerArray = project.layers;
@@ -34,11 +57,14 @@ var ExportSVG = this.ExportSVG = Base.extend({
 
 	/**
 	 * 
-	 * Takes the layer and then parses all groups
-	 * and items into one svg
+	 * Takes the selected Paper.js layer and parses all groups
+	 * and items on the layer into one SVG
 	 * 
-	 * takes in a Paper.js Layer
-	 * returns svg object (xml dom)
+	 * @name ExportSVG#exportLayer
+	 * @function
+	 * @param {Paper.js Layer} layer A Paper.js layer
+	 * @return {SVG DOM} this.exportGroup(layer) The layer converted into an
+	 * SVG group
 	 */
 	exportLayer: function(layer) {
 		return this.exportGroup(layer);
@@ -47,11 +73,12 @@ var ExportSVG = this.ExportSVG = Base.extend({
 
 	/**
 	 * 
-	 * Takes the group and puts it's items 
-	 * in a svg file.
+	 * Takes a Paper.js group and puts its items in a SVG file.
 	 * 
-	 * takes in a Paper.js Group
-	 * returns svg object (xml dom)
+	 * @name ExportSVG#exportGroup
+	 * @function
+	 * @param {Paper.js Group} group A Paper.js group
+	 * @return {SVG DOM} svgG An SVG object
 	 */
 	exportGroup: function(group) {
 		var svgG = document.createElementNS(this.NS, 'g');
@@ -74,8 +101,10 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	 * Takes the path and puts it in
 	 * a svg file.
 	 * 
-	 * takes in a Paper.js Path
-	 * returns svg object (xml dom)
+	 * @name ExportSVG#exportPath
+	 * @function
+	 * @param {Paper.js Path} path A Paper.js path object
+	 * @return {SVG DOM} svgPath An SVG object of the imported path
 	 */
 	exportPath: function(path) {
 		var svgPath = document.createElementNS(this.NS, 'path');
@@ -185,6 +214,17 @@ var ExportSVG = this.ExportSVG = Base.extend({
 	},		
 
 	//TRY TO BREAK THIS! FOR ANDREW
+	/**
+	* Checks the type SVG object created by converting from Paper.js
+	*
+	* @name ExportSVG#checkType
+	* @function
+	* @param {SVG Object Array} segArray An array of objects for the newly
+	* converted SVG object
+	* @return {String} type A string labeling which type of object the 
+	* passed in object is
+	*/
+
 	_checkType: function(segArray) {
 		var type;
 		var dPoint12;
