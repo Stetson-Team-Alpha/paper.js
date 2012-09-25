@@ -386,6 +386,20 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'stroke-miterlimit':
 				item.miterLimit = parseInt(value, 10);
 				break;
+			case 'transform':
+				value = value.replace(/px/g, '');
+				value = value.replace(/, /g, ',');
+				value = value.replace(/ /g, ',');
+				value = value.split(',');
+				for (var i in value) {
+					value[i] = value[i].replace(/[a-zA-Z()]/g, '');
+					value[i] = parseFloat(value[i], 10);
+				}
+				console.log(value);
+				
+				var matrix = new Matrix(value[0], value[2], value[1], value[3], value[4], value[5]);
+				item.transform(matrix);
+				console.log(item);
 			// case 'clip':
 			// case 'clip-path':
 			// case 'clip-rule':
