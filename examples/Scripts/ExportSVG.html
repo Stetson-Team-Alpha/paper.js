@@ -5,7 +5,11 @@
 	<title>Stroke Bounds</title>
 	<link rel="stylesheet" href="../css/style.css">
 	<script type="text/javascript" src="../../dist/paper.js"></script>
-	<script type="text/paperscript" canvas="canvas">
+
+</head>
+<body>	
+	<canvas id="canvas" width="500" height="500"></canvas>
+		<script type="text/paperscript" canvas="canvas">
 		project.currentStyle = {
 		    strokeColor: 'black',
 		    strokeWidth: 2,
@@ -51,6 +55,13 @@
 		}
 
 		function onMouseDown(event) {
+               var esvg = new ExportSVG();
+		//esvg.exportProject(paper.project);
+		var output = esvg.exportProject(paper.project);
+           console.log(output);
+		var test = document.getElementById('svg')
+           test.innerHTML = "";
+           test.appendChild (output);   
 		    smooth = !smooth;
 		    if (!smooth) {
 		        // If smooth has been turned off, we need to reset
@@ -59,7 +70,10 @@
 		            var segment = path.segments[i];
 		            segment.handleIn = segment.handleOut = null;
 		        }
+
+ 
 		    }
+
 		}
 
 		// Reposition the path whenever the window is resized:
@@ -67,13 +81,9 @@
 		    initializePath();
 		}
 		
-		var esvg = new ExportSVG;
-		esvg.exportProject(paper.project);
+		
 	</script>
-</head>
-<body>	
-	<canvas id="canvas" width="500" height="500"></canvas>
-	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:500px; height:500px; background:black;" id="svg">
-	</svg>	
+	<div id="svg">
+	</div>	
 </body>
 </html>

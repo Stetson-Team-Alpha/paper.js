@@ -124,7 +124,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		if(path.content){
 			type = 'text';
 		} else {
-			var type = this._checkType(segArray, pointArray, handleInArray, handleOutArray);
+			var type = this._checkType(path, segArray, pointArray, handleInArray, handleOutArray);
 		}
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
@@ -195,7 +195,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			default:
 				//Is there a more efficient way to do this...?(See ln 175) -Jacob
 				svgEle = document.createElementNS(this.NS, 'path');
-				//svgEle = this.pathSetup(path);
+				svgEle = this.pathSetup(path);
 				break;
 		}
 
@@ -230,8 +230,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			var svgPath = document.createElementNS(this.NS, 'path');
 			var segArray = path.getSegments();
 			var pointArray = new Array();
-			var handleInArray = new Array();
-			var handleOutArray = new Array();
+			var hIArray = new Array();
+			var hOArray = new Array();
 			
 			//...because this block of code is repeated from a previous method. (lns 88 - 93)
 			for (i = 0; i < segArray.length; i++) {
@@ -246,27 +246,25 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			var y2;
 			var handleOut1;
 			var handleIn2;
+			pointString += 'M' + pointArray[0].getX() + ',' + pointArray[0].getY();
 			//Checks 2 points and the angles in between the 2 points
 			for (i = 0; i < pointArray.length-1; i++) {
+				console.log(pointArray[i].getX());
+				console.log(pointArray[i].getY());
 				x1 = pointArray[i].getX();
 				y1 = pointArray[i].getY();
 				x2 = pointArray[i + 1].getX();
 				y2 = pointArray[i + 1].getY();
-				handleOut1 = hOarray[i];
-				handleIn2 = hIarray[i+1];
+				handleOut1 = hOArray[i];
+				handleIn2 = hIArray[i+1];
 				if(handleOut1.getX() == 0 && handleOut1.getY() == 0 && handleIn2.getX() == 0 && handleIn2.getY() ==0) {
-					if (i == 0) {
-						//M is moveto, moving to a point without drawing
-						pointString+= 'M ' + x2 + ' ' + y2 + ' ';
-					} else {
 						//L is lineto, moving to a point with drawing
-						pointString+= 'L ' + x2 + ' ' + y2 + ' ';
-				}
+						pointString+= 'L' + x2 + ',' + y2 + ' ';
 				} else {
 					//c is curveto, relative: handleOut, handleIn - endpoint, endpoint - startpoint
-					pointString+= 'c ' + handleOut1.getX() + ' ' + handleOut1.getY() + ' ';
-					pointString+= (handleIn2.getX() - x2) + ' ' + (handleIn2.getY() - y2) + ' ';
-					pointString+= (x2 - x1) + ' ' + (y2-y1) +  ' ';
+					pointString+= 'c' + handleOut1.getX() + ',' + handleOut1.getY() + ' ';
+					pointString+= (handleIn2.getX() - x2) + ',' + (handleIn2.getY() - y2) + ' ';
+					pointString+= (x2 - x1) + ',' + (y2-y1) +  ' ';
 			}
 		}
 			if (path.getClosed())
@@ -290,7 +288,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	* passed in object is
 	*/
 
-	_checkType: function(segArray, pointArray, handleInArray, handleOutArray) {
+	_checkType: function(path, segArray, pointArray, handleInArray, handleOutArray) {
 		var type;
 		var dPoint12;
 		var dPoint34;
