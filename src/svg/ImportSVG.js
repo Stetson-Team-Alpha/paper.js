@@ -6,52 +6,15 @@
 
 var ImportSVG = this.ImportSVG = Base.extend({
 	/**
-	 * Takes the svg dom obj and parses the data
-	 * to create a layer with groups (if needed) with
-	 * items inside. Should support nested groups.
-	 *
-	 * takes in a svg object (xml dom)
-	 * returns Paper.js Layer
-	 */
-	importSVG: function(svg) {
-		var layer = new Layer();
-		groups = this.importGroup(svg);
-		layer.addChild(groups);
-
-		return layer;
-	},
-
-	/**
-	 * Creates a Paper.js Group by parsing
-	 * a specific svg g node
-	 *
-	 * takes in a svg object (xml dom)
-	 * returns Paper.js Group
-	 */
-	importGroup: function(svg) {
-		var group = new Group();
-		var child;
-		for (var i in svg.childNodes) {
-			child = svg.childNodes[i];
-			if (child.nodeType != 1) {
-				continue;
-			}
-			item = this.importPath(child);
-			group.addChild(item);
-		}
-
-		return group;
-	},
-
-	/**
 	 * Creates a Paper.js Path by parsing
-	 * a specific svg node (rect, path, circle, polygon, etc)
+	 * any svg node (rect, path, circle, polygon, g, svg, etc)
 	 * and creating the right path object based on the svg type.
 	 *
 	 * takes in a svg object (xml dom)
 	 * returns Paper.js Item
 	 */
-	importPath: function(svg) {
+	importSVG: function(svg) {
+		var item = null;
 		switch (svg.nodeName.toLowerCase()) {
 			case 'line':
 				item = this._importLine(svg);
@@ -63,7 +26,8 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				item = this._importOval(svg);
 				break;
 			case 'g':
-				item = this.importGroup(svg);
+			case 'svg':
+				item = this._importGroup(svg);
 				break;
 			case 'text':
 				item = this._importText(svg);
@@ -78,10 +42,34 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		}
 
 		if (item) {
-			this._importStyles(svg, item);
+			this._importAttributesAndStyles(svg, item);
 		}
 
 		return item;
+	},
+	
+	/**
+	 * Creates a Paper.js Group by parsing
+	 * a specific svg g node
+	 *
+	 * takes in a svg object (xml dom)
+	 * returns Paper.js Group
+	 */
+	_importGroup: function(svg) {
+		var group = new Group();
+		var child;
+		for (var i in svg.childNodes) {
+			child = svg.childNodes[i];
+			if (child.nodeType != 1) {
+				continue;
+			}
+			item = this.importSVG(child);
+			if (item) {
+				group.addChild(item);
+			}
+		}
+
+		return group;
 	},
 
 	/**
@@ -333,19 +321,19 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - a svg node (xml dom)
 	 *   - Paper.js Item
 	 */
-	_importStyles: function(svg, item) {
+	_importAttributesAndStyles: function(svg, item) {
+		//TODO:Gradients
 		var name,
 			value;
 		for (var i = 0; i < svg.style.length; ++i) {
 			name = svg.style[i];
 			value = svg.style[name];
-			this._applyStyle(name, value, item);
+			this._applyAttributeOrStyle(name, value, item);
 		}
 		for (var i = 0; i < svg.attributes.length; ++i) {
 			name = svg.attributes[i].name;
 			value = svg.attributes[i].value;
-			this._applyStyle(name, value, item);
-			console.log([name, value]);
+			this._applyAttributeOrStyle(name, value, item);
 		}
 	},
 
@@ -358,8 +346,11 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - a style value (e.g. 2px)
 	 *   - Paper.js Item
 	 */
-	 _applyStyle: function(name, value, item) {
+	 _applyAttributeOrStyle: function(name, value, item) {
 		switch (name) {
+			case 'id':
+				item.name = value;
+				break;
 			case 'fill':
 				if (value != 'none') {
 					item.fillColor = value;
