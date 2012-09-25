@@ -315,8 +315,18 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			if(segArray.length == 8 && dPoint12 === dPoint34) {
 				type = 'roundRect';
 			} else if(segArray.length == 4) {
-				if(handleInArray[0].getX() != 0 || handleInArray[0].getY() != 0 && Math.abs(handleInArray[0].getX()) === Math.abs(handleOutArray[0].getX()) && Math.abs(handleInArray[0].getY()) === Math.abs(handleOutArray[0].getY())) {
-					if(handleInArray[3].getY() === handleOutArray[0].getX() && handleOutArray[3].getY() === handleInArray[0].getX()) {
+				var checkPointValues = true;
+				for(i = 0; i < pointArray.length; i++) {
+					while(checkPointValues) {
+						if(handleInArray[i].getX() != 0 || handleInArray[i].getY() != 0 && Math.abs(handleInArray[i].getX()) === Math.abs(handleOutArray[i].getX()) && Math.abs(handleInArray[i].getY()) === Math.abs(handleOutArray[i].getY())) {
+							checkPointValues = true;
+						} else {
+							checkPointValues = false;
+						}
+					}
+				}
+						
+				if(checkPointValues == true && handleInArray[3].getY() === handleOutArray[0].getX() && handleOutArray[3].getY() === handleInArray[0].getX()) {
 						type = 'circle';
 					} else {
 						type = 'ellipse';
@@ -343,31 +353,4 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			
 		}
 	}
-		
-		//IGNORE THIS FOR NOW, WILL BE DETERMINED LATER IF NEEDED OR NOT
-		/*if(segArray.length == 4) {
-			if (!curves) {
-				if (dPoint12 == dPoint34) {
-					type = "rectangle";
-				} 
-			} 
-			else if (handleInArray[0].getX() != 0 || handleInArray[0].getY() != 0 && Math.abs(handleInArray[0].getX()) === Math.abs(handleOutArray[0].getX()) && Math.abs(handleInArray[0].getY()) === Math.abs(handleOutArray[0].getY())) {
-				if (handleInArray[3].getY() === handleOutArray[0].getX() && handleOutArray[3].getY() === handleInArray[0].getX()) {
-					type = 'circle'
-				} else {
-					type = 'ellipse';
-				}
-			}
-		} else if (segArray.length >= 3 && !curves{
-			if(path.getClosed()) {
-				type = 'polygon';
-			} else {
-				type = 'polyline';
-			}
-		} else if(segArray.length == 2 && !curves){
-			type = 'line';
-		}/*
-		
-		return type;
-	}*/
 });
