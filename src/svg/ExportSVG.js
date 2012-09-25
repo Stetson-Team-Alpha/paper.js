@@ -262,8 +262,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 						pointString+= 'L' + x2 + ',' + y2 + ' ';
 				} else {
 					//c is curveto, relative: handleOut, handleIn - endpoint, endpoint - startpoint
-					pointString+= 'c' + handleOut1.getX() + ',' + handleOut1.getY() + ' ';
-					pointString+= (handleIn2.getX() - x2) + ',' + (handleIn2.getY() - y2) + ' ';
+					pointString+= 'c' + (handleOut1.getX())  + ',' + (handleOut1.getY()) + ' ';
+					pointString+= (x2 - x1 + handleIn2.getX()) + ',' + (y2 - y1 + handleIn2.getY()) + ' ';
 					pointString+= (x2 - x1) + ',' + (y2-y1) +  ' ';
 			}
 		}
