@@ -398,15 +398,32 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			// case 'clip':
 			// case 'clip-path':
 			// case 'clip-rule':
-			case 'font':
-			case 'font-family':
-			case 'font-size':
 			// case 'mask':
 			case 'opacity':
 				item.opacity = parseInt(value, 10);
 			case 'visibility':
 				item.visibility = (value == 'visible') ? true : false;
 				break;
+		}
+		if (item.characterStyle) {
+			switch (name) {
+				case 'font':
+					var text = document.createElement('span');
+					text.style.font = value;
+					for (var i = 0; i < text.style.length; ++i) {
+						var n = text.style[i];
+						this._applyAttributeOrStyle(n, text.style[n], item);
+					}
+					break;
+				case 'font-family':
+					var fonts = value.split(',');
+					fonts[0] = fonts[0].replace(/^\s+|\s+$/g, "");
+					item.characterStyle.font = fonts[0];
+					break;
+				case 'font-size':
+					item.characterStyle.fontSize = parseInt(value, 10);
+					break;
+			}	
 		}
 	}
 });
