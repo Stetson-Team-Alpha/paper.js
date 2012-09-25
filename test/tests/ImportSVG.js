@@ -18,8 +18,7 @@
 
 module('ImportSVG');
 
-test('make an svg line', function()
-{
+test('make an svg line', function() {
 	var svgns = "http://www.w3.org/2000/svg";
   	var svgDocument = evt.target.ownerDocument;
    	var shape = svgDocument.createElementNS(svgns, "line");
@@ -33,10 +32,9 @@ test('make an svg line', function()
 	line = this.initialize(new Point(x1, y1), new Point(x2, y2), true);
 	equals(importedLine, line);
 	
-}
+});
 
-test('make an svg square', function()
-{
+test('make an svg square', function() {
 	var svgns = "http://www.w3.org/2000/svg";
 	var svgDocument = evt.target.ownerDocument;
 	var shape = svgDocument.createElementNS(svgns, "rect");
@@ -50,9 +48,9 @@ test('make an svg square', function()
 	var rect = new Rectangle();
 	rect = this.initialize(5, 5, 40, 40);
 	equals(importedRectangle, rect);
+});
 
-test('make an svg circle', function()
-{
+test('make an svg circle', function() {
 	var svgns = "http://www.w3.org/2000/svg";
 	var svgDocument = evt.target.ownerDocument;
 	var shape = svgDocument.createElementNS(svgns, "circle");
@@ -66,4 +64,3 @@ test('make an svg circle', function()
 	circle = this.Circle(new Point(cx, cy), 20);
 	equals(importedCircle, circle);
 });
-/
