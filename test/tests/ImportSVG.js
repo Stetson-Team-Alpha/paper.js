@@ -51,14 +51,12 @@ test('make an svg square', function() {
 });
 
 test('make an svg circle', function() {
-	var svgns = "http://www.w3.org/2000/svg";
-	var svgDocument = evt.target.ownerDocument;
-	var shape = svgDocument.createElementNS(svgns, "circle");
+	var shape = svgDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
 	shape.setAttributeNS(null, "cx", 25);
 	shape.setAttributeNS(null, "cy", 25);
 	shape.setAttributeNS(null, "r", 20);
 	shape.setAttributeNS(null, "fill", "green");
-	svgDocument.documentElement.appendChild(shape);
+	document.documentElement.appendChild(shape);
 	var importedCircle = new ImportSVG(shape);
 	var circle = new Path.Constructors();
 	circle = this.Circle(new Point(cx, cy), 20);
