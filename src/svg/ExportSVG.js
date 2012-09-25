@@ -121,7 +121,11 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			handleOutArray[i] = segArray[i].getHandleOut();
 		}
 		//finding the type of path to export
-		var type = 'path' //this._checkType(segArray, pointArray, handleInArray, handleOutArray);
+		if(path.content){
+			type = 'text';
+		} else {
+			var type = 'path' //this._checkType(segArray, pointArray, handleInArray, handleOutArray);
+		}
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
 			case 'rect':
@@ -176,14 +180,18 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle.setAttribute('points', pointString);
 				break;
 			case 'polygon':
-				svgEle = document.createElementNS(this.NS, 'polygon')
+				svgEle = document.createElementNS(this.NS, 'polygon');
 				var pointString;
 				for(i = 0; i < pointArray.length; ++i) {
 					pointString += pointArray[i].getX() + ", " + pointArray[i].getY();
 				}
 				svgEle.setAttribute('points', pointString);
 				break;
-			//Do we need a text case?
+			case 'text':
+				svgEle = document.createElementNS(this.NS, 'text');
+				svgEle.setAttribute('x', path.getPosition().getX());
+				svgEle.setAttribute('y', path.getPosition().getY());
+				svgEle.appendChild(path.getContent());
 			default:
 				//Is there a more efficient way to do this...?(See ln 175) -Jacob
 				svgEle = document.createElementNS(this.NS, 'path');
