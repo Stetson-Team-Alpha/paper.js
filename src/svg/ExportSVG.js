@@ -220,7 +220,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			svgEle.setAttribute('name', path.name);
 		}
 		return svgEle;
-	}
+	},
 
 
 		//pointstring is formatted in the way the SVG XML will be reading
@@ -279,7 +279,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	},	*/	
 
 	//TRY TO BREAK THIS! FOR ANDREW
-<<<<<<< HEAD
 	/**
 	* Checks the type SVG object created by converting from Paper.js
 	*
@@ -292,11 +291,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	*/
 
 	_checkType: function(segArray) {
-=======
-	//Need to add path functionality
-	//UNEXPECTED IDENTIFIER HERE AS WELL. WHY?
-	/*_checkType: function(segArray, pointArray, handleInArray, handleOutArray) {
->>>>>>> 8d8f6539a3ac2f2997c58ede3bc5f44e066d3456
 		var type;
 		var dPoint12;
 		var dPoint34;
@@ -344,11 +338,13 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 					type = 'polygon';
 				} else {
 					type = 'polyline';
+				}
 			} else {
 				type = 'line';
 			}
 			
 		}
+	}
 		
 		//IGNORE THIS FOR NOW, WILL BE DETERMINED LATER IF NEEDED OR NOT
 		/*if(segArray.length == 4) {
