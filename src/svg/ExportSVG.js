@@ -124,7 +124,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		if(path.content){
 			type = 'text';
 		} else {
-			var type = 'path' //this._checkType(segArray, pointArray, handleInArray, handleOutArray);
+			var type = this._checkType(segArray, pointArray, handleInArray, handleOutArray);
 		}
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
@@ -142,7 +142,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle.setAttribute('x', pointArray[3].getX());
 				svgEle.setAttribute('y', pointArray[4].getY());
 				svgEle.setAttribute('rx', rx);
-				svgEle.setAttribute('ry'. ry);
+				svgEle.setAttribute('ry', ry);
 				svgEle.setAttribute('width', pointArray[1].getDistance(pointArray[6], true));
 				svgEle.setAttribute('height',pointArray[0].getDistance(pointArray[3], true));
 				break;
@@ -226,7 +226,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//pointstring is formatted in the way the SVG XML will be reading
 		//Namely, a point and the way to traverse to that point
 		//GETTING UNEXPECTED IDENTIFIER HERE...WHY?
-		/*pathSetup: function(path) {
+		pathSetup: function(path) {
 			var svgPath = document.createElementNS(this.NS, 'path');
 			var segArray = path.getSegments();
 			var pointArray = new Array();
@@ -276,7 +276,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			}
 			svgPath.setAttribute('d',pointString);
 			return svgPath;
-	},	*/	
+	},	
 
 	//TRY TO BREAK THIS! FOR ANDREW
 	/**
@@ -290,7 +290,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	* passed in object is
 	*/
 
-	_checkType: function(segArray) {
+	_checkType: function(segArray, pointArray, handleInArray, handleOutArray) {
 		var type;
 		var dPoint12;
 		var dPoint34;
@@ -303,7 +303,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			segHandleIn = segArray[i].getHandleIn();
 			segHandleOut = segArray[i].getHandleOut();
 			curves = segHandleIn.getX() != 0 || segHandleIn.getY() != 0 ? true : curves;
-			curves = segHandleOut().getX() != 0 || segHandleOut().getY() != 0 ? true : curves;			
+			curves = segHandleOut.getX() != 0 || segHandleOut.getY() != 0 ? true : curves;			
 		}
 		//Cleaned up the logic so it's a little easier to read and includes path.
 		//Kept the old logic for reference. Also, I kept the really long logic lines in their correct
