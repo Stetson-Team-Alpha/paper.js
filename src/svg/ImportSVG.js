@@ -39,6 +39,8 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'polyline':
 				item = this._importPoly(svg);
 				break;
+			default:
+				//Not supported yet.
 		}
 
 		if (item) {
@@ -395,6 +397,14 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'visibility':
 				item.visibility = (value == 'visible') ? true : false;
 				break;
+			case 'font':
+			case 'font-family':
+			case 'font-size':
+				//Implemented in characterStyle below.
+				break;
+			default:
+				// Not supported yet.
+				break;
 		}
 		if (item.characterStyle) {
 			switch (name) {
@@ -430,7 +440,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var transforms = svg.transform.baseVal;
 		var transform;
 		var matrix = new Matrix();
-		console.log(matrix);
+
 		for (var i = 0; i < transforms.numberOfItems; ++i) {
 			transform = transforms.getItem(i);
 			if (transform.type == SVGTransform.SVG_TRANSFORM_UNKNOWN) {
