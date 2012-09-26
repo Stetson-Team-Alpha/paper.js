@@ -49,7 +49,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 
 		return item;
 	},
-	
+
 	/**
 	 * Creates a Paper.js Group by parsing
 	 * a specific svg g node
@@ -305,7 +305,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var start = points.getItem(0);
 		var point;
 		poly.moveTo([start.x, start.y]);
-		
+
 		for (var i = 1; i < points.length; ++i) {
 			point = points.getItem(i);
 			poly.lineTo([point.x, point.y]);
@@ -424,14 +424,14 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				case 'font-size':
 					item.characterStyle.fontSize = parseFloat(value, 10);
 					break;
-			}	
+			}
 		}
 	},
-	
+
 	/**
 	 * Applies the transfroms specified on the item
 	 * This method is destructive to item
-	 * 
+	 *
 	 * Takes
 	 *   - a svg (dom element)
 	 *   - a Paper.js item
@@ -463,20 +463,20 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				//Compensate for SVG's theta rotation going the opposite direction
 				case SVGTransform.SVG_TRANSFORM_MATRIX:
 					var temp = transformMatrix.getShearX();
-					transformMatrix.setShearX(transformMatrix.getShearY()); 
-					transformMatrix.setShearY(temp); 
+					transformMatrix.setShearX(transformMatrix.getShearY());
+					transformMatrix.setShearY(temp);
 					break;
 				case SVGTransform.SVG_TRANSFORM_SKEWX:
-					transformMatrix.setShearX(transformMatrix.getShearY()); 
-					transformMatrix.setShearY(0); 
+					transformMatrix.setShearX(transformMatrix.getShearY());
+					transformMatrix.setShearY(0);
 					break;
 				case SVGTransform.SVG_TRANSFORM_SKEWY:
-					transformMatrix.setShearY(transformMatrix.getShearX()); 
-					transformMatrix.setShearX(0); 
+					transformMatrix.setShearY(transformMatrix.getShearX());
+					transformMatrix.setShearX(0);
 					break;
 				case SVGTransform.SVG_TRANSFORM_ROTATE:
-					transformMatrix.setShearX(transformMatrix.getShearX() * -1); 
-					transformMatrix.setShearY(transformMatrix.getShearY() * -1); 
+					transformMatrix.setShearX(transformMatrix.getShearX() * -1);
+					transformMatrix.setShearY(transformMatrix.getShearY() * -1);
 					break;
 			}
 			matrix.concatenate(transformMatrix);
