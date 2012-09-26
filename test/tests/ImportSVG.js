@@ -50,18 +50,27 @@ test('make an svg square', function() {
 	equals(importedRectangle, rect);
 });
 
-test('make an svg circle', function() {
+test('compare circle x values', function() {
 	NS = 'http://www.w3.org/2000/svg'
-	var shape;
 	var shape = document.createElementNS(NS, 'circle');
 	shape.setAttribute('cx', 25);
 	shape.setAttribute('cy', 25);
 	shape.setAttribute('r', 20);
-	//document.documentElement.appendChild(shape);
-	var importedCircle = new ImportSVG;
-	importedCircle.importSVG(shape);
+	document.documentElement.appendChild(shape);
+	var importedCircle = new ImportSVG(shape);
+	//importedCircle.importSVG(shape);
 
+	var segArray = path.getSegments();
+	var pointArray = new Array();
+	var handleInArray = new Array();
+	var handleOutArray = new Array();
+	for (i = 0; i < segArray.length; i++) {	
+	console.log(segArray[i].toString());
+	pointArray[i] = segArray[i].getPoint();
+	handleInArray[i] = segArray[i].getHandleIn();
+	handleOutArray[i] = segArray[i].getHandleOut();
+	}
 	var center = new Point(25, 25);
 	var circle = new Path.Circle(center, 20);
-	//equals(importedCircle, circle);
+	equals(importedCircle, circle);
 });
