@@ -316,16 +316,13 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				type = 'roundRect';
 			} else if(segArray.length == 4) {
 				var checkPointValues = true;
-				for(i = 0; i < pointArray.length; i++) {
-					while(checkPointValues) {
-						if(handleInArray[i].getX() != 0 || handleInArray[i].getY() != 0 && Math.abs(handleInArray[i].getX()) === Math.abs(handleOutArray[i].getX()) && Math.abs(handleInArray[i].getY()) === Math.abs(handleOutArray[i].getY())) {
-							checkPointValues = true;
-						} else {
-							checkPointValues = false;
-						}
-					}
-				}
-						
+				for(i = 0; i < pointArray.length && checkPointValues == true; i++) {
+					if(handleInArray[i].getX() != 0 || handleInArray[i].getY() != 0 && Math.abs(handleInArray[i].getX()) === Math.abs(handleOutArray[i].getX()) && Math.abs(handleInArray[i].getY()) === Math.abs(handleOutArray[i].getY())) {
+						checkPointValues = true;
+					} else {
+						checkPointValues = false;
+					}	
+				}	
 				if(checkPointValues == true && handleInArray[3].getY() === handleOutArray[0].getX() && handleOutArray[3].getY() === handleInArray[0].getX()) {
 						type = 'circle';
 					} else {
