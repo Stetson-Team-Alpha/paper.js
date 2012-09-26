@@ -167,16 +167,18 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * returns a PointText item
 	 */
 	_importText: function(svgText) {
-		//TODO: Extend this for multiple values
 		var x = svgText.x.baseVal.getItem(0).value || 0;
 		var y = svgText.y.baseVal.getItem(0).value || 0;
-		//END:TODO
 
+		/* Not supported by Paper.js
+		x; //multiple values for x
+		y; //multiple values for y
 		var dx; //character kerning
 		var dy; //character baseline
 		var rotate; //character rotation
 		var textLength; //the width of the containing box
-		var lengthAdjust; //
+		var lengthAdjust;
+		*/
 		var textContent = svgText.textContent || "";
 		var topLeft = new Point(x, y);
 		var text = new PointText(topLeft);
@@ -322,18 +324,17 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - Paper.js Item
 	 */
 	_importAttributesAndStyles: function(svg, item) {
-		//TODO:Gradients
 		var name,
 			value;
 		for (var i = 0; i < svg.style.length; ++i) {
 			name = svg.style[i];
 			value = svg.style[name];
-			this._applyAttributeOrStyle(name, value, item);
+			this._applyAttributeOrStyle(name, value, item, svg);
 		}
 		for (var i = 0; i < svg.attributes.length; ++i) {
 			name = svg.attributes[i].name;
 			value = svg.attributes[i].value;
-			this._applyAttributeOrStyle(name, value, item);
+			this._applyAttributeOrStyle(name, value, item, svg);
 		}
 	},
 
@@ -345,8 +346,9 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - a style name (e.g. stroke-width)
 	 *   - a style value (e.g. 2px)
 	 *   - Paper.js Item
+	 *   - the svg (dom element)
 	 */
-	 _applyAttributeOrStyle: function(name, value, item) {
+	 _applyAttributeOrStyle: function(name, value, item, svg) {
 		switch (name) {
 			case 'id':
 				item.name = value;
@@ -362,7 +364,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				}
 				break;
 			case 'stroke-width':
-				item.strokeWidth = parseInt(value, 10);
+				item.strokeWidth = parseFloat(value, 10);
 				break;
 			case 'stroke-linecap':
 				item.strokeCap = value;
@@ -376,22 +378,20 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				value = value.replace(/ /g, ',');
 				value = value.split(',');
 				for (var i in value) {
-					value[i] = parseInt(value[i], 10);
+					value[i] = parseFloat(value[i], 10);
 				}
 				item.dashArray = value;
 				break;
 			case 'stroke-dashoffset':
-				item.dashOffset = parseInt(value, 10);
+				item.dashOffset = parseFloat(value, 10);
 				break;
 			case 'stroke-miterlimit':
-				item.miterLimit = parseInt(value, 10);
+				item.miterLimit = parseFloat(value, 10);
 				break;
-			// case 'clip':
-			// case 'clip-path':
-			// case 'clip-rule':
-			// case 'mask':
+			case 'transform':
+				this._applyTransform(item, svg);
 			case 'opacity':
-				item.opacity = parseInt(value, 10);
+				item.opacity = parseFloat(value, 10);
 			case 'visibility':
 				item.visibility = (value == 'visible') ? true : false;
 				break;
@@ -403,7 +403,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 					text.style.font = value;
 					for (var i = 0; i < text.style.length; ++i) {
 						var n = text.style[i];
-						this._applyAttributeOrStyle(n, text.style[n], item);
+						this._applyAttributeOrStyle(n, text.style[n], item, svg);
 					}
 					break;
 				case 'font-family':
@@ -412,9 +412,47 @@ var ImportSVG = this.ImportSVG = Base.extend({
 					item.characterStyle.font = fonts[0];
 					break;
 				case 'font-size':
-					item.characterStyle.fontSize = parseInt(value, 10);
+					item.characterStyle.fontSize = parseFloat(value, 10);
 					break;
 			}	
 		}
+	},
+	
+	/**
+	 * Applies the transfroms specified on the item
+	 * This method is destructive to item
+	 * 
+	 * Takes
+	 *   - a svg (dom element)
+	 *   - a Paper.js item
+	 */
+	_applyTransform: function(item, svg) {
+		var transforms = svg.transform.baseVal;
+		var transform;
+		var svgMatrix = null;
+		for (var i = 0; i < transforms.numberOfItems; ++i) {
+			transform = transforms.getItem(i);
+			if (transform.type == SVGTransform.SVG_TRANSFORM_UNKNOWN) {
+				continue;
+			}
+			// console.log(svgMatrix, transform.matrix);
+			if (!svgMatrix) {
+				svgMatrix = transform.matrix;
+			} else {
+				svgMatrix = svgMatrix.multiply(transform.matrix);
+			}
+		}
+		// console.log(svgMatrix);
+
+		var matrix = new Matrix(
+			svgMatrix.a,
+			svgMatrix.c * - 1,// Compensate for SVG angles going in opposite direction
+			svgMatrix.b * - 1,// Compensate for SVG angles going in opposite direction
+			svgMatrix.d,
+			svgMatrix.e,
+			svgMatrix.f
+		);
+		console.log(matrix)
+		// item.transform(matrix);
 	}
 });
