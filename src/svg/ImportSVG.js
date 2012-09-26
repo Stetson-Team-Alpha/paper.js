@@ -429,30 +429,48 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	_applyTransform: function(item, svg) {
 		var transforms = svg.transform.baseVal;
 		var transform;
-		var svgMatrix = null;
+		var matrix = new Matrix();
+		console.log(matrix);
 		for (var i = 0; i < transforms.numberOfItems; ++i) {
 			transform = transforms.getItem(i);
 			if (transform.type == SVGTransform.SVG_TRANSFORM_UNKNOWN) {
 				continue;
 			}
-			// console.log(svgMatrix, transform.matrix);
-			if (!svgMatrix) {
-				svgMatrix = transform.matrix;
-			} else {
-				svgMatrix = svgMatrix.multiply(transform.matrix);
-			}
-		}
-		// console.log(svgMatrix);
+			var transformMatrix = new Matrix(
+				transform.matrix.a,
+				transform.matrix.c,
+				transform.matrix.b,
+				transform.matrix.d,
+				transform.matrix.e,
+				transform.matrix.f
+			);
+			switch (transform.type) {
+				case SVGTransform.SVG_TRANSFORM_TRANSLATE:
+					break;
+				case SVGTransform.SVG_TRANSFORM_SCALE:
+					break;
 
-		var matrix = new Matrix(
-			svgMatrix.a,
-			svgMatrix.c * - 1,// Compensate for SVG angles going in opposite direction
-			svgMatrix.b * - 1,// Compensate for SVG angles going in opposite direction
-			svgMatrix.d,
-			svgMatrix.e,
-			svgMatrix.f
-		);
-		console.log(matrix)
-		// item.transform(matrix);
+				//Compensate for SVG's theta rotation going the opposite direction
+				case SVGTransform.SVG_TRANSFORM_MATRIX:
+					var temp = transformMatrix.getShearX();
+					transformMatrix.setShearX(transformMatrix.getShearY()); 
+					transformMatrix.setShearY(temp); 
+					break;
+				case SVGTransform.SVG_TRANSFORM_SKEWX:
+					transformMatrix.setShearX(transformMatrix.getShearY()); 
+					transformMatrix.setShearY(0); 
+					break;
+				case SVGTransform.SVG_TRANSFORM_SKEWY:
+					transformMatrix.setShearY(transformMatrix.getShearX()); 
+					transformMatrix.setShearX(0); 
+					break;
+				case SVGTransform.SVG_TRANSFORM_ROTATE:
+					transformMatrix.setShearX(transformMatrix.getShearX() * -1); 
+					transformMatrix.setShearY(transformMatrix.getShearY() * -1); 
+					break;
+			}
+			matrix.concatenate(transformMatrix);
+		}
+		item.transform(matrix);
 	}
 });
