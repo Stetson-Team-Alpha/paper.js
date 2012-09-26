@@ -328,8 +328,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 					} else {
 						type = 'ellipse';
 					}
-					
-				}
 			} else {
 				type = 'path';
 			}
