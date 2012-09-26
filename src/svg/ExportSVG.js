@@ -328,10 +328,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 					} else {
 						type = 'ellipse';
 					}
-			} else {
-				type = 'path';
-			}
-		} else {
+			} 
+		} else if(!curves) {
 			dPoint12 = pointArray[0].getDistance(pointArray[1], true);
 			dPoint34 = pointArray[2].getDistance(pointArray[3], true);
 			if(segArray.length == 4 && dPoint12 == dPoint34) {
@@ -346,6 +344,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				type = 'line';
 			}
 			
+		} else {
+			type = 'NULL";
 		}
 	}
 });
