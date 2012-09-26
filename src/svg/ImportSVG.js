@@ -362,7 +362,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				}
 				break;
 			case 'stroke-width':
-				item.strokeWidth = parseInt(value, 10);
+				item.strokeWidth = parseFloat(value, 10);
 				break;
 			case 'stroke-linecap':
 				item.strokeCap = value;
@@ -376,15 +376,15 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				value = value.replace(/ /g, ',');
 				value = value.split(',');
 				for (var i in value) {
-					value[i] = parseInt(value[i], 10);
+					value[i] = parseFloat(value[i], 10);
 				}
 				item.dashArray = value;
 				break;
 			case 'stroke-dashoffset':
-				item.dashOffset = parseInt(value, 10);
+				item.dashOffset = parseFloat(value, 10);
 				break;
 			case 'stroke-miterlimit':
-				item.miterLimit = parseInt(value, 10);
+				item.miterLimit = parseFloat(value, 10);
 				break;
 			case 'transform':
 				value = value.replace(/px/g, '');
@@ -405,7 +405,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			// case 'clip-rule':
 			// case 'mask':
 			case 'opacity':
-				item.opacity = parseInt(value, 10);
+				item.opacity = parseFloat(value, 10);
 			case 'visibility':
 				item.visibility = (value == 'visible') ? true : false;
 				break;
@@ -426,7 +426,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 					item.characterStyle.font = fonts[0];
 					break;
 				case 'font-size':
-					item.characterStyle.fontSize = parseInt(value, 10);
+					item.characterStyle.fontSize = parseFloat(value, 10);
 					break;
 			}	
 		}
