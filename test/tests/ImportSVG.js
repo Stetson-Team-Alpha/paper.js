@@ -34,7 +34,13 @@ test('make an svg line', function() {
 
 });
 
-test('make an svg square', function() {
+test('compare rectangle values', function() {
+	NS = 'http://w3.org/2000/svg'
+	var shape = document.createElementNS(NS, 'rect');
+	shape.setAttribute(
+	
+	
+	
 	var svgns = "http://www.w3.org/2000/svg";
 	var svgDocument = evt.target.ownerDocument;
 	var shape = svgDocument.createElementNS(svgns, "rect");
@@ -85,6 +91,48 @@ test('compare circle values', function() {
 		pointArray[i] = segArray[i].getPoint();
 		handleInArray[i] = segArray[i].getHandleIn();
 		handleOutArray[i] = segArray[i].getHandleOut();
+	}
+	var circleX = pointArray[1].getX();
+	var circleY = pointArray[2].getY();
+	equals(svgCircleX, circleX);
+	equals(svgCircleY, circleY);
+});
+
+test('compare invalid circle X values', function() {
+NS = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(NS, 'ellipse');
+	shape.setAttribute('cx', null);
+	shape.setAttribute('cy', null);
+	shape.setAttribute('r', 20);
+	shape.setAttribute('stroke', 'black');
+	shape.setAttribute('fill', 'black');
+	shape.setAttribute('stroke-width', 1);
+	document.documentElement.appendChild(shape);
+	var importedCircle = new ImportSVG();
+	var imported = importedCircle.importSVG(shape);
+	var svgSegArray = imported.getSegments();
+	var svgPointArray = new Array();
+	var svgHandleInArray = new Array();
+	var svgHandleOutArray = new Array();
+	for (i = 0; i < svgSegArray.length; i++) {
+       		svgPointArray[i] = svgSegArray[i].getPoint();
+	        svgHandleInArray[i] = svgSegArray[i].getHandleIn();
+		svgHandleOutArray[i] = svgSegArray[i].getHandleOut();
+	}
+	var svgCircleX = svgPointArray[1].getX();
+	var svgCircleY = svgPointArray[2].getY();
+
+
+	var center = new Point(null, null);
+	var circle = new Path.Circle(center, 25);
+	var segArray = circle.getSegments();
+	var pointArray = new Array();
+	var handleInArray = new Array();
+	var handleOutArray = new Array();
+	for (i = 0; i < segArray.length; i++) {
+	        pointArray[i] = segArray[i].getPoint();
+	        handleInArray[i] = segArray[i].getHandleIn();
+	        handleOutArray[i] = segArray[i].getHandleOut();
 	}
 	var circleX = pointArray[1].getX();
 	var circleY = pointArray[2].getY();
