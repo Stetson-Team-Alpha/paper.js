@@ -50,27 +50,44 @@ test('make an svg square', function() {
 	equals(importedRectangle, rect);
 });
 
-test('compare circle x values', function() {
+test('compare circle values', function() {
 	NS = 'http://www.w3.org/2000/svg'
-	var shape = document.createElementNS(NS, 'circle');
+	var shape = document.createElementNS(NS, 'ellipse');
 	shape.setAttribute('cx', 25);
 	shape.setAttribute('cy', 25);
 	shape.setAttribute('r', 20);
+	shape.setAttribute('stroke', 'black');
+	shape.setAttribute('fill', 'black');
+	shape.setAttribute('stroke-width', 1);
 	document.documentElement.appendChild(shape);
-	var importedCircle = new ImportSVG(shape);
-	//importedCircle.importSVG(shape);
+	var importedCircle = new ImportSVG();
+	var balls = importedCircle.importSVG(shape);
+	var svgSegArray = balls.getSegments();
+	var svgPointArray = new Array();
+	var svgHandleInArray = new Array();
+	var svgHandleOutArray = new Array();
+	for (i = 0; i < svgSegArray.length; i++) {
+		svgPointArray[i] = svgSegArray[i].getPoint();
+		svgHandleInArray[i] = svgSegArray[i].getHandleIn();
+		svgHandleOutArray[i] = svgSegArray[i].getHandleOut();
+	}
+	var svgCircleX = svgPointArray[1].getX();
+	var svgCircleY = svgPointArray[2].getY();
 
-	var segArray = path.getSegments();
+
+	var center = new Point(25, 25);
+	var circle = new Path.Circle(center, 25);
+	var segArray = circle.getSegments();
 	var pointArray = new Array();
 	var handleInArray = new Array();
 	var handleOutArray = new Array();
 	for (i = 0; i < segArray.length; i++) {	
-	console.log(segArray[i].toString());
-	pointArray[i] = segArray[i].getPoint();
-	handleInArray[i] = segArray[i].getHandleIn();
-	handleOutArray[i] = segArray[i].getHandleOut();
+		pointArray[i] = segArray[i].getPoint();
+		handleInArray[i] = segArray[i].getHandleIn();
+		handleOutArray[i] = segArray[i].getHandleOut();
 	}
-	var center = new Point(25, 25);
-	var circle = new Path.Circle(center, 20);
-	equals(importedCircle, circle);
+	var circleX = pointArray[1].getX();
+	var circleY = pointArray[2].getY();
+	equals(svgCircleX, circleX);
+	equals(svgCircleY, circleY);
 });
