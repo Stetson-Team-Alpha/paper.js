@@ -167,16 +167,18 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * returns a PointText item
 	 */
 	_importText: function(svgText) {
-		//TODO: Extend this for multiple values
 		var x = svgText.x.baseVal.getItem(0).value || 0;
 		var y = svgText.y.baseVal.getItem(0).value || 0;
-		//END:TODO
 
+		/* Not supported by Paper.js
+		x; //multiple values for x
+		y; //multiple values for y
 		var dx; //character kerning
 		var dy; //character baseline
 		var rotate; //character rotation
 		var textLength; //the width of the containing box
-		var lengthAdjust; //
+		var lengthAdjust;
+		*/
 		var textContent = svgText.textContent || "";
 		var topLeft = new Point(x, y);
 		var text = new PointText(topLeft);
@@ -322,7 +324,6 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - Paper.js Item
 	 */
 	_importAttributesAndStyles: function(svg, item) {
-		//TODO:Gradients
 		var name,
 			value;
 		for (var i = 0; i < svg.style.length; ++i) {
@@ -395,11 +396,8 @@ var ImportSVG = this.ImportSVG = Base.extend({
 					value[i] = value[i].replace(/[a-zA-Z()]/g, '');
 					value[i] = parseFloat(value[i], 10);
 				}
-				console.log(value);
-				
 				var matrix = new Matrix(value[0], value[2], value[1], value[3], value[4], value[5]);
 				item.transform(matrix);
-				console.log(item);
 			// case 'clip':
 			// case 'clip-path':
 			// case 'clip-rule':
