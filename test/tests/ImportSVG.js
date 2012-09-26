@@ -27,11 +27,11 @@ test('make an svg line', function() {
      	shape.setAttributeNS(null, "x2", 45);
        	shape.setAttributeNS(null, "y2", 45);
         svgDocument.documentElement.appendChild(shape);
-	var importedLine = new ImportSVG(shape);
+	var importedLine = new ImportSVG();
 	var line = new Line();
 	line = this.initialize(new Point(x1, y1), new Point(x2, y2), true);
 	equals(importedLine, line);
-	
+
 });
 
 test('make an svg square', function() {
@@ -51,14 +51,17 @@ test('make an svg square', function() {
 });
 
 test('make an svg circle', function() {
-	var shape = svgDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
-	shape.setAttributeNS(null, "cx", 25);
-	shape.setAttributeNS(null, "cy", 25);
-	shape.setAttributeNS(null, "r", 20);
-	shape.setAttributeNS(null, "fill", "green");
-	document.documentElement.appendChild(shape);
-	var importedCircle = new ImportSVG(shape);
-	var circle = new Path.Constructors();
-	circle = this.Circle(new Point(cx, cy), 20);
+	NS = 'http://www.w3.org/2000/svg'
+	var shape;
+	var shape = document.createElementNS(NS, 'circle');
+	shape.setAttribute('cx', 25);
+	shape.setAttribute('cy', 25);
+	shape.setAttribute('r', 20);
+	//document.documentElement.appendChild(shape);
+	var importedCircle = new ImportSVG;
+	importedCircle.importSVG(shape);
+
+	var center = new Point(25, 25);
+	var circle = new Path.Circle(center, 20);
 	equals(importedCircle, circle);
 });
