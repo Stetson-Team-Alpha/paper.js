@@ -329,12 +329,12 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		for (var i = 0; i < svg.style.length; ++i) {
 			name = svg.style[i];
 			value = svg.style[name];
-			this._applyAttributeOrStyle(name, value, item);
+			this._applyAttributeOrStyle(name, value, item, svg);
 		}
 		for (var i = 0; i < svg.attributes.length; ++i) {
 			name = svg.attributes[i].name;
 			value = svg.attributes[i].value;
-			this._applyAttributeOrStyle(name, value, item);
+			this._applyAttributeOrStyle(name, value, item, svg);
 		}
 	},
 
@@ -346,8 +346,9 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - a style name (e.g. stroke-width)
 	 *   - a style value (e.g. 2px)
 	 *   - Paper.js Item
+	 *   - the svg (dom element)
 	 */
-	 _applyAttributeOrStyle: function(name, value, item) {
+	 _applyAttributeOrStyle: function(name, value, item, svg) {
 		switch (name) {
 			case 'id':
 				item.name = value;
@@ -388,20 +389,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 				item.miterLimit = parseFloat(value, 10);
 				break;
 			case 'transform':
-				value = value.replace(/px/g, '');
-				value = value.replace(/, /g, ',');
-				value = value.replace(/ /g, ',');
-				value = value.split(',');
-				for (var i in value) {
-					value[i] = value[i].replace(/[a-zA-Z()]/g, '');
-					value[i] = parseFloat(value[i], 10);
-				}
-				var matrix = new Matrix(value[0], value[2], value[1], value[3], value[4], value[5]);
-				item.transform(matrix);
-			// case 'clip':
-			// case 'clip-path':
-			// case 'clip-rule':
-			// case 'mask':
+				this._applyTransform(item, svg);
 			case 'opacity':
 				item.opacity = parseFloat(value, 10);
 			case 'visibility':
@@ -415,7 +403,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 					text.style.font = value;
 					for (var i = 0; i < text.style.length; ++i) {
 						var n = text.style[i];
-						this._applyAttributeOrStyle(n, text.style[n], item);
+						this._applyAttributeOrStyle(n, text.style[n], item, svg);
 					}
 					break;
 				case 'font-family':
@@ -428,5 +416,43 @@ var ImportSVG = this.ImportSVG = Base.extend({
 					break;
 			}	
 		}
+	},
+	
+	/**
+	 * Applies the transfroms specified on the item
+	 * This method is destructive to item
+	 * 
+	 * Takes
+	 *   - a svg (dom element)
+	 *   - a Paper.js item
+	 */
+	_applyTransform: function(item, svg) {
+		var transforms = svg.transform.baseVal;
+		var transform;
+		var svgMatrix = null;
+		for (var i = 0; i < transforms.numberOfItems; ++i) {
+			transform = transforms.getItem(i);
+			if (transform.type == SVGTransform.SVG_TRANSFORM_UNKNOWN) {
+				continue;
+			}
+			// console.log(svgMatrix, transform.matrix);
+			if (!svgMatrix) {
+				svgMatrix = transform.matrix;
+			} else {
+				svgMatrix = svgMatrix.multiply(transform.matrix);
+			}
+		}
+		// console.log(svgMatrix);
+
+		var matrix = new Matrix(
+			svgMatrix.a,
+			svgMatrix.c * - 1,// Compensate for SVG angles going in opposite direction
+			svgMatrix.b * - 1,// Compensate for SVG angles going in opposite direction
+			svgMatrix.d,
+			svgMatrix.e,
+			svgMatrix.f
+		);
+		console.log(matrix)
+		// item.transform(matrix);
 	}
 });
