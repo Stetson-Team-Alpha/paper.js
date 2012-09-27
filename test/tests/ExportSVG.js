@@ -33,8 +33,32 @@ test('compare line path functions', function() {
 	var line = new Path.Line([x1, y1], [x2, y2]);
 
 	var epjs = new ExportSVG();
-	var exportedLine = epjs.exportProject(line);
+	var exportedLine = epjs.exportPath(line);
 
-	compareSegmentLists(exportedLine.segments, line.segments, true);
+	var shapeX1 = shape.getAttribute('x1');
+
+	var exportedX1 = exportedLine.getAttribute('x1');
+
+	equals(exportedX1, shapeX1);
+
+});
+
+test('compare circle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'circle');
+	var cx = 100,
+		cy = 80,
+		r = 50;	
+	shape.setAttribute('cx', cx);
+	shape.setAttribute('cy', cy);
+	shape.setAttribute('r', r);
+
+	var center = new Point(cx, cy);
+	var circle = new Path.Circle(center, r);
+
+	var epjs = new ExportSVG();
+	var exportedCircle = epjs.exportPath(circle);
+
+	compareSegmentLists(exportedCircle.segments, shape.segments, true);
 
 });
