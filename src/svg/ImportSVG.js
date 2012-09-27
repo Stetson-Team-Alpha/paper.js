@@ -22,6 +22,9 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'rect':
 				item = this._importRectangle(svg);
 				break;
+			case 'circle':
+				item = this._importCircle(svg);
+				break;
 			case 'ellipse':
 				item = this._importOval(svg);
 				break;
