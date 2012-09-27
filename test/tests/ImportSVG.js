@@ -18,26 +18,6 @@
 
 module('ImportSVG');
 
-/*test('make an svg text object', function() {
-*	var svgns = 'http://www.w3.org/2000/svg';
-*	var data = document.createTextNode("Testing");
-*	var svgText = document.createElementNS(svgns, 'text');
-*	var x = 0,
-*		y = 13,
-*	svgText.setAttribute('x', x);
-*	svgText.setAttribute('y', y);
-*
-*	svgText.appendChild(data);
-*	
-*	var textContent = "Testing";
-*	var topLeft = new Point(x, y);
-*	var text = new PointTest(topLeft);
-*	text.content = textContent;
-*	
-*	equals(data, text.content, true);
-*
-});*/
-
 test('make an svg line', function() {
 	var svgns = 'http://www.w3.org/2000/svg';
    	var shape = document.createElementNS(svgns, 'line');
@@ -98,6 +78,30 @@ test('compare rectangle values', function() {
 	compareSegmentLists(importedRectangle.segments, realRectangle.segments, true);
 });
 
+
+test('compare negative rectangle values', function() {
+        var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = -925,
+		y = -111,
+		width = -100,
+		height = -18;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+
+	var isvg = new ImportSVG();
+	var importedRectangle = isvg.importSVG(shape);
+        var topLeft = new Point(x, y);
+        var size = new Size(width, height);
+        var rectangle = new Rectangle(topLeft, size);
+        var realRectangle = new Path.Rectangle(rectangle);
+	
+	compareSegmentLists(importedRectangle.segments, realRectangle.segments, true);
+																				});
+
+
 test('compare invalid rectangle values', function() {
         var svgns = 'http://www.w3.org/2000/svg'
 	var shape = document.createElementNS(svgns, 'rect');
@@ -146,6 +150,32 @@ test('compare oval values', function() {
 
 });
 
+test('compare negative oval values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'ellipse');
+	var cx = -111,
+		cy = -2,
+		rx = -292,
+		ry = -1;
+	shape.setAttribute('cx', cx);
+	shape.setAttribute('cy', cy);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+
+	var isvg = new ImportSVG();
+	var importedOval = isvg.importSVG(shape);
+
+	var center = new Point(cx, cy);
+	var offset = new Point(rx, ry);
+	var topLeft = center.subtract(offset);
+	var bottomRight = center.add(offset);
+
+	var rect = new Rectangle(topLeft, bottomRight);
+	var oval = new Path.Oval(rect);
+
+	compareSegmentLists(importedOval.segments, oval.segments, true);
+
+});
 
 test('compare invalid oval values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
@@ -188,8 +218,28 @@ test('compare circle values', function() {
 
 	compareSegmentLists(importedCircle.segments, circle.segments, true);
 
+});
+
+test('compare negative circle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'circle');
+	var cx = -234,
+	cy = -77,
+	r = -1110;
+	shape.setAttribute('cx', cx);
+	shape.setAttribute('cy', cy);
+	shape.setAttribute('r', r);
+
+	var isvg = new ImportSVG();
+	var importedCircle = isvg.importSVG(shape);
+
+	var center = new Point(cx, cy);
+	var circle = new Path.Circle(center, r);
+
+	compareSegmentLists(importedCircle.segments, circle.segments, true);
 
 });
+
 
 test('compare invalid circle values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
@@ -207,3 +257,58 @@ test('compare invalid circle values', function() {
 	compareSegmentLists(importedCircle.segments, circle.segments, true);
 
 });
+
+test('compare polygon values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polygon');
+	var svgpoints = "100,10 40,180 190,60 10,60 160,180";
+	shape.setAttribute('points', svgpoints);
+
+	var isvg = new ImportSVG();
+	var importedPolygon = isvg.importSVG(shape);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	compareSegmentLists(importedPolygon.segments, poly.segments, true);
+
+});
+
+test('compare polyline values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polyline');
+	var svgpoints = "5,5 45,45 5,45 45,5";
+	shape.setAttribute('points', svgpoints);
+
+	var isvg = new ImportSVG();
+	var importedPolyline = isvg.importSVG(shape);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	compareSegmentLists(importedPolyline.segments, poly.segments, true);
+
+});
+
