@@ -191,16 +191,27 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle = document.createElementNS(this.NS, 'text');
 				svgEle.setAttribute('x', path.getPosition().getX());
 				svgEle.setAttribute('y', path.getPosition().getY());
+				if(path.style.font != undefined) {
+					svgEle.setAttribute('font', path.style.font);
+				}
+				if(path.characterStyle.font != undefined) {
+					svgEle.setAttribute('font-family', path.characterStyle.font);
+				}
+				if(path.characterStyle.fontSize != undefined) {
+					svgEle.setAttribute('font-size',path.characterStyle.fontSize);
+				}
 				svgEle.appendChild(path.getContent());
 			default:
-				//Is there a more efficient way to do this...?(See ln 175) -Jacob
 				svgEle = document.createElementNS(this.NS, 'path');
-				svgEle = this.pathSetup(path);
+				svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
 				break;
 		}
 
 		//checks if there is a stroke color in the passed in path
 		//adds an SVG element attribute with the defined stroke color 
+		if(path.id != undefined) {
+			svgEle.setAttribute('id', path.id);
+		}
 		if (path.strokeColor != undefined) {
 			svgEle.setAttribute('stroke', path.strokeColor.toCssString());
 		}
@@ -209,15 +220,44 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		if (path.fillColor != undefined) {
 			svgEle.setAttribute('fill', path.fillColor.toCssString());
 		}
-
 		//same thing as stroke color except with stroke width
 		if(path.strokeWidth != undefined){
 			svgEle.setAttribute('stroke-width', path.strokeWidth);
 		}
-
-		//same thing as stroke color exce[t with the path name
+		//same thing as stroke color except with the path name
 		if(path.name != undefined) {
 			svgEle.setAttribute('name', path.name);
+		}
+		if(path.strokeCap != undefined) {
+			svgEle.setAttribute('stroke-linecap', path.strokeCap);
+		}
+		if(path.strokeJoin != undefined) {
+			svgEle.setAttribute('stroke-linejoin', path.strokeJoin);
+		}
+		if(path.opacity != undefined) {
+			svgEle.setAttribute('opacity', path.opacity);
+		}
+		if(path.dashArray != undefined) {
+			var dashVals = '';
+			for (var i in path.dashArray) {
+				dashVals += path.dashArray[i] + ", ";
+			}
+			svgEle.setAttribute('stoke-dasharray', dashVals);
+		}
+		if(path.dashOffset != undefined) {
+			svgEle.setAttribute('stroke-dashoffset', path.dashOffset);
+		}
+		if(path.miterLimit != undefined) {
+			svgEle.setAttribute('stroke-miterlimit', path.miterLimit);
+		}
+		if(path.visibility != undefined) {
+			var visString = '';
+			if(path.visibility) {
+				visString = 'visible';
+			} else {
+				visString = 'hidden';
+			}
+			svgEle.setAttribute('visibility', visString);
 		}
 		return svgEle;
 	},
@@ -225,20 +265,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 
 		//pointstring is formatted in the way the SVG XML will be reading
 		//Namely, a point and the way to traverse to that point
-		//GETTING UNEXPECTED IDENTIFIER HERE...WHY?
-		pathSetup: function(path) {
+		pathSetup: function(path, pointArray, hIArray, hOArray) {
 			var svgPath = document.createElementNS(this.NS, 'path');
-			var segArray = path.getSegments();
-			var pointArray = new Array();
-			var hIArray = new Array();
-			var hOArray = new Array();
-			
-			//...because this block of code is repeated from a previous method. (lns 88 - 93)
-			for (i = 0; i < segArray.length; i++) {
-				pointArray[i] = segArray[i].getPoint();
-				hIArray[i] = segArray[i].getHandleIn();
-				hOArray[i] = segArray[i].getHandleOut();
-			}
 			var pointString = '';
 			var x1;
 			var x2;
@@ -345,7 +373,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			}
 			
 		} else {
-			type = 'NULL";
+			type = null;
 		}
 	}
 });
