@@ -330,10 +330,14 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 */
 	_importAttributesAndStyles: function(svg, item) {
 		var name,
-			value;
+			value,
+			cssName;
 		for (var i = 0; i < svg.style.length; ++i) {
 			name = svg.style[i];
-			value = svg.style[name];
+			cssName = name.replace(/-(.)/g, function(match, p) {
+				return p.toUpperCase();
+			});
+			value = svg.style[cssName];
 			this._applyAttributeOrStyle(name, value, item, svg);
 		}
 		for (var i = 0; i < svg.attributes.length; ++i) {
@@ -354,6 +358,9 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - the svg (dom element)
 	 */
 	 _applyAttributeOrStyle: function(name, value, item, svg) {
+		if (!value) {
+			return;
+		}
 		switch (name) {
 			case 'id':
 				item.name = value;
