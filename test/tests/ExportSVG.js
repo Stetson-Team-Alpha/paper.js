@@ -19,7 +19,7 @@
 module('ExportSVG');
 
 test('compare line path functions', function() {
-	var svgns = 'http://www.w3.org/2000/svg'
+	var svgns = 'http://www.w3.org/2000/svg';
 	var shape = document.createElementNS(svgns, 'line');
 	var x1 = 5,
 		x2 = 45,
