@@ -338,10 +338,12 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//Checks if the type of the passed in path is a rounded rectangle, an ellipse, a circle, or if it's simply a path
 		//If there aren't any curves (if curves = false), then it checks if the type is a rectangle, a polygon, a polyline, or simply a line.
 		if(curves){
-			dPoint12 = pointArray[0].getDistance(pointArray[3], true);
-			dPoint34 = pointArray[4].getDistance(pointArray[7], true);
-			if(segArray.length == 8 && dPoint12 === dPoint34) {
-				type = 'roundRect';
+			if(segArray.length == 8) {
+				dPoint12 = pointArray[0].getDistance(pointArray[3], true);
+				dPoint34 = pointArray[4].getDistance(pointArray[7], true);
+				if(dPoint12 == dPoint34) {
+					type = 'roundRect';
+				}
 			} else if(segArray.length == 4) {
 				var checkPointValues = true;
 				for(i = 0; i < pointArray.length && checkPointValues == true; i++) {
@@ -358,10 +360,12 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 					}
 			} 
 		} else if(!curves) {
-			dPoint12 = pointArray[0].getDistance(pointArray[1], true);
-			dPoint34 = pointArray[2].getDistance(pointArray[3], true);
-			if(segArray.length == 4 && dPoint12 == dPoint34) {
-				type = 'rect';
+			if(segArray.length == 4) {
+				dPoint12 = pointArray[0].getDistance(pointArray[1], true);
+				dPoint34 = pointArray[2].getDistance(pointArray[3], true);
+				if(dPoint12 == dPoint34) {
+					type = 'rect';
+				}
 			} else if(segArray.length >= 3) {
 				if(path.getClosed()) {
 					type = 'polygon';
