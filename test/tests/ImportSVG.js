@@ -18,6 +18,26 @@
 
 module('ImportSVG');
 
+/*test('make an svg text object', function() {
+*	var svgns = 'http://www.w3.org/2000/svg';
+*	var data = document.createTextNode("Testing");
+*	var svgText = document.createElementNS(svgns, 'text');
+*	var x = 0,
+*		y = 13,
+*	svgText.setAttribute('x', x);
+*	svgText.setAttribute('y', y);
+*
+*	svgText.appendChild(data);
+*	
+*	var textContent = "Testing";
+*	var topLeft = new Point(x, y);
+*	var text = new PointTest(topLeft);
+*	text.content = textContent;
+*	
+*	equals(data, text.content, true);
+*
+});*/
+
 test('make an svg line', function() {
 	var svgns = 'http://www.w3.org/2000/svg';
    	var shape = document.createElementNS(svgns, 'line');
@@ -171,7 +191,7 @@ test('compare circle values', function() {
 
 });
 
-test('compare circle values', function() {
+test('compare invalid circle values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
 	var shape = document.createElementNS(svgns, 'circle');
 	shape.setAttribute('cx', null);
