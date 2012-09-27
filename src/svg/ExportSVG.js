@@ -110,20 +110,26 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		var svgEle;
 
 		//Getting all of the segments(a point, a HandleIn and a HandleOut) in the path
-		var segArray = path.getSegments();
-		var pointArray = new Array();
-		var handleInArray = new Array();
-		var handleOutArray = new Array();
-		for (i = 0; i < segArray.length; i++) {	
-			console.log(segArray[i].toString());
-			pointArray[i] = segArray[i].getPoint();
-			handleInArray[i] = segArray[i].getHandleIn();
-			handleOutArray[i] = segArray[i].getHandleOut();
-		}
+		var segArray;
+		var pointArray;
+		var handleInArray;
+		var handleOutArray;
 		//finding the type of path to export
 		if(path.content){
 			type = 'text';
 		} else {
+			//Values are only defined if the path is not text because
+			// text does not have these values
+			segArray = path.getSegments();
+			pointArray = new Array();
+			handleInArray = new Array();
+			handleOutArray = new Array();
+			for (i = 0; i < segArray.length; i++) {	
+				console.log(segArray[i].toString());
+				pointArray[i] = segArray[i].getPoint();
+				handleInArray[i] = segArray[i].getHandleIn();
+				handleOutArray[i] = segArray[i].getHandleOut();
+		}
 			var type = this._checkType(path, segArray, pointArray, handleInArray, handleOutArray);
 		}
 		//switch statement that determines what type of SVG element to add to the SVG Object
