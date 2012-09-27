@@ -18,6 +18,23 @@
 
 module('ExportSVG');
 
-test('invalid values on RGB hex converter', function() {
-	
+test('compare line path functions', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'line');
+	var x1 = 5,
+		x2 = 45,
+		y1 = 5,
+		y2 = 45;
+	shape.setAttribute('x1', x1);
+	shape.setAttribute('y1', y1);
+	shape.setAttribute('x2', x2);
+	shape.setAttribute('y2', y2);
+
+	var line = new Path.Line([x1, y1], [x2, y2]);
+
+	var epjs = new ExportSVG();
+	var exportedLine = epjs.exportProject(line);
+
+	compareSegmentLists(exportedLine.segments, line.segments, true);
+
 });
