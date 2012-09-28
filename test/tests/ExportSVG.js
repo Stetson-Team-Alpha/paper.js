@@ -86,6 +86,42 @@ test('compare negative line path functions', function() {
 
 });
 
+test('compare rectangle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg';
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = 25,
+		y = 25,
+		width = 100,
+		height = 100;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+	
+	var topLeft = new Point(x, y);
+	var size = new Size(width, height);
+	var rect = new Rectangle(topLeft, size);
+
+	var epjs = new ExportSVG();
+	var exportedRectangle = new epjs.exportPath(rect);
+
+	var shapex = shape.getAttribute('x');
+	var shapey = shape.getAttribute('y');
+	var shapewidth = shape.getAttribute('width');
+	var shapeheight = shape.getAttribute('height');
+
+	var exportedx = exportedRectangle.getAttribute('x');
+	var exportedy = exportedRectangle.getAttribute('y');
+	var exportedwidth = exportedRectangle.getAttribute('width');
+	var exportedheight = exportedRectangle.getAttribute('height');
+
+	equals(shapex, exportedx);
+	equals(shapey, exportedy);
+	equals(shapewidth, exportedwidth);
+	equals(shapeheight, exportedheight);
+});
+
+
 test('compare invalid line path functions', function() {
 	var svgns = 'http://www.w3.org/2000/svg';
 	var shape = document.createElementNS(svgns, 'line');
@@ -180,7 +216,7 @@ test('compare negative circle values', function() {
 
 });
 
-test('compare invalid circle values', function() {
+/**test('compare invalid circle values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
 	var shape = document.createElementNS(svgns, 'circle');
 	var cx = null,
@@ -208,6 +244,4 @@ test('compare invalid circle values', function() {
 	equals(shapecy, exportedcy);
 	equals(shaper, exportedr);
 
-});
-
-
+});*/
