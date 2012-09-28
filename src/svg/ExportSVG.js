@@ -380,10 +380,10 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				}
 			} else {
 				type = 'line';
-			}
-			
+			}	
 		} else {
 			type = null;
 		}
+		return type;
 	}
 });
