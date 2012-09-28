@@ -362,11 +362,13 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 						checkPointValues = false;
 					}	
 				}	
-				if(checkPointValues == true && handleInArray[0].getY() === handleInArray[3].getX() && handleOutArray[0].getY() === handleOutArray[3].getX()) {
+				if(checkPointValues == true)
+					if(handleInArray[0].getY() === handleInArray[3].getX() && handleOutArray[0].getY() === handleOutArray[3].getX()) {
 						type = 'circle';
 					} else {
 						type = 'ellipse';
 					}
+				}
 			} 
 		} else if(!curves) {
 			if(segArray.length == 4) {
