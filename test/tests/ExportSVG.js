@@ -269,6 +269,96 @@ test('compare rounded rectangle values', function() {
 	equals(shapey, exportedy);
 	equals(shapewidth, exportedwidth);
 	equals(shapeheight, exportedheight);
+});
+
+test('compare negative rounded rectangle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg';
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = -25,
+		y = -25,
+		rx = -50,
+		ry = -50,
+		width = -100,
+		height = -100;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+
+	var topLeft = new Point(x, y);
+	var size = new Size(width, height);
+	var cornerSize = new Size(rx, ry);
+	var rect = new Rectangle(topLeft, size);
+	var roundRect = new Path.RoundRectangle(rect, cornerSize);
+
+	var epjs = new ExportSVG();
+	var exportedRectangle = new epjs.exportPath(rect);
+
+	var shapex = shape.getAttribute('x');
+	var shapey = shape.getAttribute('y');
+	var shapecx = shape.getAttribute('rx');
+	var shapecy = shape.getAttribute('ry');
+	var shapewidth = shape.getAttribute('width');
+	var shapeheight = shape.getAttribute('height');
+
+	var exportedx = exportedRectangle.getAttribute('x');
+	var exportedy = exportedRectangle.getAttribute('y');
+	var exportedcx = exportedRectangle.getAttribute('rx');
+	var exportedcy = exportedRectangle.getAttribute('ry');
+	var exportedwidth = exportedRectangle.getAttribute('width');
+	var exportedheight = exportedRectangle.getAttribute('height');
+
+	equals(shapex, exportedx);
+	equals(shapey, exportedy);
+	equals(shapewidth, exportedwidth);
+	equals(shapeheight, exportedheight);
+});
+
+test('compare invalid rounded rectangle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg';
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = null,
+	y = null,
+	rx = null,
+	ry = null,
+	width = null,
+	height = null;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+
+	var topLeft = new Point(x, y);
+	var size = new Size(width, height);
+	var cornerSize = new Size(rx, ry);
+	var rect = new Rectangle(topLeft, size);
+	var roundRect = new Path.RoundRectangle(rect, cornerSize);
+
+	var epjs = new ExportSVG();
+	var exportedRectangle = new epjs.exportPath(rect);
+
+	var shapex = shape.getAttribute('x');
+	var shapey = shape.getAttribute('y');
+	var shapecx = shape.getAttribute('rx');
+	var shapecy = shape.getAttribute('ry');
+	var shapewidth = shape.getAttribute('width');
+	var shapeheight = shape.getAttribute('height');
+
+	var exportedx = exportedRectangle.getAttribute('x');
+	var exportedy = exportedRectangle.getAttribute('y');
+	var exportedcx = exportedRectangle.getAttribute('rx');
+	var exportedcy = exportedRectangle.getAttribute('ry');
+	var exportedwidth = exportedRectangle.getAttribute('width');
+	var exportedheight = exportedRectangle.getAttribute('height');
+
+	equals(shapex, exportedx);
+	equals(shapey, exportedy);
+	equals(shapewidth, exportedwidth);
+	equals(shapeheight, exportedheight);
 });*/
 
 test('compare oval values', function() {
