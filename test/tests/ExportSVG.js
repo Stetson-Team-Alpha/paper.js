@@ -224,36 +224,44 @@ test('compare invalid rectangle values', function() {
 	equals(shapey, exportedy);
 	equals(shapewidth, exportedwidth);
 	equals(shapeheight, exportedheight);
-});*/
+});
 
 test('compare rounded rectangle values', function() {
 	var svgns = 'http://www.w3.org/2000/svg';
 	var shape = document.createElementNS(svgns, 'rect');
 	var x = 25,
 		y = 25,
-		cx = 50,
-		cy = 50,
+		rx = 50,
+		ry = 50,
 		width = 100,
 		height = 100;
 	shape.setAttribute('x', x);
 	shape.setAttribute('y', y);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
 	shape.setAttribute('width', width);
 	shape.setAttribute('height', height);
 
 	var topLeft = new Point(x, y);
 	var size = new Size(width, height);
+	var cornerSize = new Size(rx, ry);
 	var rect = new Rectangle(topLeft, size);
+	var roundRect = new Path.RoundRectangle(rect, cornerSize);
 
 	var epjs = new ExportSVG();
 	var exportedRectangle = new epjs.exportPath(rect);
 
 	var shapex = shape.getAttribute('x');
 	var shapey = shape.getAttribute('y');
+	var shapecx = shape.getAttribute('rx');
+	var shapecy = shape.getAttribute('ry');
 	var shapewidth = shape.getAttribute('width');
 	var shapeheight = shape.getAttribute('height');
 
 	var exportedx = exportedRectangle.getAttribute('x');
 	var exportedy = exportedRectangle.getAttribute('y');
+	var exportedcx = exportedRectangle.getAttribute('rx');
+	var exportedcy = exportedRectangle.getAttribute('ry');
 	var exportedwidth = exportedRectangle.getAttribute('width');
 	var exportedheight = exportedRectangle.getAttribute('height');
 
@@ -261,6 +269,85 @@ test('compare rounded rectangle values', function() {
 	equals(shapey, exportedy);
 	equals(shapewidth, exportedwidth);
 	equals(shapeheight, exportedheight);
+});*/
+
+test('compare oval values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'ellipse');
+	var cx = 100,
+		cy = 80,
+		rx = 50;
+		ry = 30;
+	shape.setAttribute('cx', cx);
+	shape.setAttribute('cy', cy);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+
+	var center = new Point(cx, cy);
+	var offset = new Point(rx, ry);
+	var topLeft = center.subtract(offset);
+	var bottomRight = center.add(offset);
+
+	var rect = new Rectangle(topLeft, bottomRight);
+	var oval = new Path.Oval(rect);
+
+	var epjs = new ExportSVG();
+	var exportedOval = epjs.exportPath(oval);
+
+	var shapecx = shape.getAttribute('cx');
+	var shapecy = shape.getAttribute('cy');
+	var shaperx = shape.getAttribute('rx');
+	var shapery = shape.getAttribute('ry');
+
+	var exportedcx = exportedOval.getAttribute('cx');
+	var exportedcy = exportedOval.getAttribute('cy');
+	var exportedrx = exportedOval.getAttribute('rx');
+	var exportedry = exportedOval.getAttribute('ry');
+
+	equals(shapecx, exportedcx);
+	equals(shapecy, exportedcy);
+	equals(shaperx, exportedrx);
+	equals(shapery, exportedry);
+
+});
+
+test('compare negative oval values', function() {
+        var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'ellipse');
+	var cx = -100,
+	cy = -80,
+	rx = -50;
+	ry = -30;
+	shape.setAttribute('cx', cx);
+	shape.setAttribute('cy', cy);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+	
+	var center = new Point(cx, cy);
+	var offset = new Point(rx, ry);
+	var topLeft = center.subtract(offset);
+	var bottomRight = center.add(offset);
+
+	var rect = new Rectangle(topLeft, bottomRight);
+	var oval = new Path.Oval(rect);
+
+	var epjs = new ExportSVG();
+	var exportedOval = epjs.exportPath(oval);
+
+	var shapecx = shape.getAttribute('cx');
+	var shapecy = shape.getAttribute('cy');
+	var shaperx = shape.getAttribute('rx');
+	var shapery = shape.getAttribute('ry');
+
+	var exportedcx = exportedOval.getAttribute('cx');
+	var exportedcy = exportedOval.getAttribute('cy');
+	var exportedrx = exportedOval.getAttribute('rx');
+	var exportedry = exportedOval.getAttribute('ry');
+	
+	equals(shapecx, exportedcx);
+	equals(shapecy, exportedcy);
+	equals(shaperx, exportedrx);
+	equals(shapery, exportedry);
 });
 
 test('compare circle values', function() {
@@ -320,5 +407,129 @@ test('compare negative circle values', function() {
 	equals(shapecx, exportedcx);
 	equals(shapecy, exportedcy);
 	equals(shaper, exportedr);
+
+});
+
+test('compare polygon values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polygon');
+	var svgpoints = "100,10 40,180 190,60 10,60 160,180";
+	shape.setAttribute('points', svgpoints);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	var epjs = new ExportSVG();
+	var exportedPolygon = epjs.exportPath(poly);
+
+	var svgPoints = shape.getAttribute('points');
+
+	var exportedPoints = shape.getAttribute('points');
+
+	equals(svgPoints, exportedPoints);
+	
+});
+
+test('compare negative polygon values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polygon');
+	var svgpoints = "-100,-10 -40,-180 -190,-60 -10,-60 -160,-180";
+	shape.setAttribute('points', svgpoints);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	var epjs = new ExportSVG();
+	var exportedPolygon = epjs.exportPath(poly);
+
+	var svgPoints = shape.getAttribute('points');
+
+	var exportedPoints = shape.getAttribute('points');
+
+	equals(svgPoints, exportedPoints);
+
+});
+
+test('compare polyline values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polyline');
+	var svgpoints = "5,5 45,45 5,45 45,5";
+	shape.setAttribute('points', svgpoints);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	var epjs = new ExportSVG();
+	var exportedPolygon = epjs.exportPath(poly);
+
+	var svgPoints = shape.getAttribute('points');
+
+	var exportedPoints = shape.getAttribute('points');
+
+	equals(svgPoints, exportedPoints);
+
+});
+
+test('compare negative polyline values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polyline');
+	var svgpoints = "-5,-5 -45,-45 -5,-45 -45,-5";
+	shape.setAttribute('points', svgpoints);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	var epjs = new ExportSVG();
+	var exportedPolygon = epjs.exportPath(poly);
+
+	var svgPoints = shape.getAttribute('points');
+
+	var exportedPoints = shape.getAttribute('points');
+
+	equals(svgPoints, exportedPoints);
 
 });
