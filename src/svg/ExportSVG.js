@@ -136,21 +136,25 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		switch (type) {
 			case 'rect':
 				svgEle = document.createElementNS(this.NS, 'rect');
+				var width = pointArray[3].getX() - pointArray[0].getX();
+				var height = pointArray[0].getY() - pointArray[1].getY();
 				svgEle.setAttribute('x', pointArray[1].getX());
 				svgEle.setAttribute('y', pointArray[1].getY());
-				svgEle.setAttribute('width', pointArray[1].getDistance(pointArray[2], true));
-				svgEle.setAttribute('height', pointArray[0].getDistance(pointArray[1], true));
+				svgEle.setAttribute('width', width);
+				svgEle.setAttribute('height', height);
 				break;
 			case 'roundRect':
 				var rx = pointArray[4].getX() - pointArray[3].getX();
 				var ry = pointArray[3].getY() - pointArray[4].getY();
+				var width = pointArray[6].getX() - pointArray[1].getX();
+				var height = pointArray[0].getY() - pointArray[3].getY();
 				svgEle = document.createElementNS(this.NS, 'rect');
 				svgEle.setAttribute('x', pointArray[3].getX());
 				svgEle.setAttribute('y', pointArray[4].getY());
 				svgEle.setAttribute('rx', rx);
 				svgEle.setAttribute('ry', ry);
-				svgEle.setAttribute('width', pointArray[1].getDistance(pointArray[6], true));
-				svgEle.setAttribute('height',pointArray[0].getDistance(pointArray[3], true));
+				svgEle.setAttribute('width', width);
+				svgEle.setAttribute('height', height);
 				break;
 			case'line':
 				svgEle = document.createElementNS(this.NS, 'line');
@@ -310,7 +314,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			return svgPath;
 	},	
 
-	//TRY TO BREAK THIS! FOR ANDREW
 	/**
 	* Checks the type SVG object created by converting from Paper.js
 	*
@@ -345,8 +348,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//If there aren't any curves (if curves = false), then it checks if the type is a rectangle, a polygon, a polyline, or simply a line.
 		if(curves){
 			if(segArray.length == 8) {
-				dPoint12 = pointArray[0].getDistance(pointArray[3], true);
-				dPoint34 = pointArray[4].getDistance(pointArray[7], true);
+				dPoint12 = pointArray[0].getY() - pointArray[3].getY();
+				dPoint34 = pointArray[7].getY() - pointArray[4].getY();
 				if(dPoint12 == dPoint34) {
 					type = 'roundRect';
 				}
@@ -359,7 +362,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 						checkPointValues = false;
 					}	
 				}	
-				if(checkPointValues == true && handleInArray[3].getY() === handleOutArray[0].getX() && handleOutArray[3].getY() === handleInArray[0].getX()) {
+				if(checkPointValues == true && handleInArray[0].getY() === handleInArray[3].getX() && handleOutArray[0].getY() === handleOutArray[3].getX()) {
 						type = 'circle';
 					} else {
 						type = 'ellipse';
@@ -367,8 +370,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			} 
 		} else if(!curves) {
 			if(segArray.length == 4) {
-				dPoint12 = pointArray[0].getDistance(pointArray[1], true);
-				dPoint34 = pointArray[2].getDistance(pointArray[3], true);
+				dPoint12 = pointArray[0].getY() - pointArray[1].getY();
+				dPoint34 = pointArray[3].getY() - pointArray[2].getY();
 				if(dPoint12 == dPoint34) {
 					type = 'rect';
 				}
