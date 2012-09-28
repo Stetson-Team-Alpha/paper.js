@@ -124,14 +124,13 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			pointArray = new Array();
 			handleInArray = new Array();
 			handleOutArray = new Array();
-			for (i = 0; i < segArray.length; i++) {	
-				console.log(segArray[i].toString());
+			for (i = 0; i < segArray.length; i++) {
 				pointArray[i] = segArray[i].getPoint();
 				handleInArray[i] = segArray[i].getHandleIn();
 				handleOutArray[i] = segArray[i].getHandleOut();
-		}
-		var exp = this;
-		var type = exp._determineType(path, segArray, pointArray, handleInArray, handleOutArray);
+			}
+			var exp = this;
+			var type = exp._determineType(path, segArray, pointArray, handleInArray, handleOutArray);
 		}
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
@@ -180,17 +179,17 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				break;
 			case 'polyline':
 				svgEle = document.createElementNS(this.NS, 'polyline');
-				var pointString;
+				var pointString = '';
 				for(i = 0; i < pointArray.length; ++i) {
-					pointString += pointArray[i].getX() + ", " + pointArray[i].getY();
+					pointString += pointArray[i].getX() + ','  + pointArray[i].getY() + ' ';
 				}
 				svgEle.setAttribute('points', pointString);
 				break;
 			case 'polygon':
 				svgEle = document.createElementNS(this.NS, 'polygon');
-				var pointString;
+				var pointString = '';
 				for(i = 0; i < pointArray.length; ++i) {
-					pointString += pointArray[i].getX() + ", " + pointArray[i].getY();
+					pointString += pointArray[i].getX() + ',' + pointArray[i].getY() + ' ';
 				}
 				svgEle.setAttribute('points', pointString);
 				break;
@@ -207,7 +206,9 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				if(path.characterStyle.fontSize != undefined) {
 					svgEle.setAttribute('font-size',path.characterStyle.fontSize);
 				}
-				svgEle.appendChild(path.getContent());
+				svgEle.textContent = path.getContent();
+				//svgEle.insertData(path.getContent()); //Gives Error
+				break;
 			default:
 				svgEle = document.createElementNS(this.NS, 'path');
 				svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
@@ -215,16 +216,16 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		}
 
 		//checks if there is a stroke color in the passed in path
-		//adds an SVG element attribute with the defined stroke color 
+		//adds an SVG element attribute with the defined stroke color
 		if(path.id != undefined) {
 			svgEle.setAttribute('id', path.id);
 		}
 		if (path.strokeColor != undefined) {
 			svgEle.setAttribute('stroke', path.strokeColor.toCssString());
 		}
-
 		//same thing as above except checking for a fill color
 		if (path.fillColor != undefined) {
+			//Cause of fill issues- CHECK THIS
 			svgEle.setAttribute('fill', path.fillColor.toCssString());
 		}
 		//same thing as stroke color except with stroke width
@@ -284,8 +285,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			pointString += 'M' + pointArray[0].getX() + ',' + pointArray[0].getY();
 			//Checks 2 points and the angles in between the 2 points
 			for (i = 0; i < pointArray.length-1; i++) {
-				console.log(pointArray[i].getX());
-				console.log(pointArray[i].getY());
 				x1 = pointArray[i].getX();
 				y1 = pointArray[i].getY();
 				x2 = pointArray[i + 1].getX();
