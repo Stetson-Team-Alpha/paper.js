@@ -369,6 +369,33 @@ test('compare polygon values', function() {
 
 });
 
+test('compare negative polygon values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polygon');
+	var svgpoints = "-100,-10 -40,-180 -190,-60 -10,-60 -160,-180";
+	shape.setAttribute('points', svgpoints);
+
+	var isvg = new ImportSVG();
+	var importedPolygon = isvg.importSVG(shape);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	compareSegmentLists(importedPolygon.segments, poly.segments, true);
+
+});
+
 test('compare polyline values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
 	var shape = document.createElementNS(svgns, 'polyline');
@@ -396,3 +423,29 @@ test('compare polyline values', function() {
 
 });
 
+	test('compare negative polyline values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'polyline');
+	var svgpoints = "-5,-5 -45,-45 -5,-45 -45,-5";
+	shape.setAttribute('points', svgpoints);
+
+	var isvg = new ImportSVG();
+	var importedPolyline = isvg.importSVG(shape);
+
+	var poly = new Path();
+	var points = shape.points;
+	var start = points.getItem(0)
+	var point;
+	poly.moveTo([start.x, start.y]);
+
+	for (var i = 1; i < points.length; ++i) {
+		point = points.getItem(i);
+		poly.lineTo([point.x, point.y]);
+	}
+	if (shape.nodeName.toLowerCase() == 'polygon') {
+		poly.closePath();
+	}
+
+	compareSegmentLists(importedPolyline.segments, poly.segments, true);
+
+});
