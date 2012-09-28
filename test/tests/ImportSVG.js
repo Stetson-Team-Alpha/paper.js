@@ -122,6 +122,90 @@ test('compare invalid rectangle values', function() {
 	compareSegmentLists(importedRectangle.segments, realRectangle.segments, true);
 																				});
 
+test('compare round rectangle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = 25,
+		y = 25,
+		rx = 50,
+		ry = 50,
+		width = 100,
+		height = 100;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+
+	var isvg = new ImportSVG();
+	var importedRectangle = isvg.importSVG(shape);
+
+	var topLeft = new Point(x, y);
+	var size = new Size(width, height);
+	var cornerSize = new Size(rx, ry);
+	var rectangle = new Rectangle(topLeft, size);
+	var roundRect = new Path.RoundRectangle(rectangle, cornerSize);
+
+	compareSegmentLists(importedRectangle.segments, roundRect.segments, true);
+});
+
+test('compare negative round rectangle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = -25,
+		y = -25,
+		rx = -50,
+		ry = -50,
+		width = -100,
+		height = -100;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+
+	var isvg = new ImportSVG();
+	var importedRectangle = isvg.importSVG(shape);
+
+	var topLeft = new Point(x, y);
+	var size = new Size(width, height);
+	var cornerSize = new Size(rx, ry);
+	var rectangle = new Rectangle(topLeft, size);
+	var roundRect = new Path.RoundRectangle(rectangle, cornerSize);
+
+	compareSegmentLists(importedRectangle.segments, roundRect.segments, true);
+});
+
+test('compare invalid round rectangle values', function() {
+	var svgns = 'http://www.w3.org/2000/svg'
+	var shape = document.createElementNS(svgns, 'rect');
+	var x = null,
+		y = null,
+		rx = null,
+		ry = null,
+		width = null,
+		height = null;
+	shape.setAttribute('x', x);
+	shape.setAttribute('y', y);
+	shape.setAttribute('rx', rx);
+	shape.setAttribute('ry', ry);
+	shape.setAttribute('width', width);
+	shape.setAttribute('height', height);
+
+	var isvg = new ImportSVG();
+	var importedRectangle = isvg.importSVG(shape);
+
+	var topLeft = new Point(x, y);
+	var size = new Size(width, height);
+	var cornerSize = new Size(rx, ry);
+	var rectangle = new Rectangle(topLeft, size);
+	var roundRect = new Path.RoundRectangle(rectangle, cornerSize);
+
+	compareSegmentLists(importedRectangle.segments, roundRect.segments, true);
+});
+
 test('compare oval values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
 	var shape = document.createElementNS(svgns, 'ellipse');
