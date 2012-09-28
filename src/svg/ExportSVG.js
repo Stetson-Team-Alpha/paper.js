@@ -130,7 +130,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				handleInArray[i] = segArray[i].getHandleIn();
 				handleOutArray[i] = segArray[i].getHandleOut();
 		}
-			var type = this._checkType(path, segArray, pointArray, handleInArray, handleOutArray);
+		var exp = this;
+		var type = exp._determineType(path, segArray, pointArray, handleInArray, handleOutArray);
 		}
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
@@ -322,7 +323,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	* passed in object is
 	*/
 
-	_checkType: function(path, segArray, pointArray, handleInArray, handleOutArray) {
+	_determineType: function(path, segArray, pointArray, handleInArray, handleOutArray) {
 		var type;
 		var dPoint12;
 		var dPoint34;
