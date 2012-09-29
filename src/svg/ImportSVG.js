@@ -14,7 +14,8 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * returns Paper.js Item
 	 */
 	importSVG: function(svg) {
-		var item = null;
+		var item;
+		var symbol;
 		switch (svg.nodeName.toLowerCase()) {
 			case 'line':
 				item = this._importLine(svg);
@@ -42,6 +43,11 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'polyline':
 				item = this._importPoly(svg);
 				break;
+			case 'symbol':
+				item = this._importGroup(svg);
+				this._importAttributesAndStyles(svg, item);
+				symbol = new Symbol(item);
+				item = null;
 			default:
 				//Not supported yet.
 		}
@@ -136,7 +142,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var size = new Size(width, height);
 		var rectangle = new Rectangle(topLeft, size);
 
-		if (rx > 0 || ry > 0) {
+		if (rx && ry) {
 			var cornerSize = new Size(rx, ry);
 			rectangle = new Path.RoundRectangle(rectangle, cornerSize);
 		} else {
@@ -330,10 +336,14 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 */
 	_importAttributesAndStyles: function(svg, item) {
 		var name,
-			value;
+			value,
+			cssName;
 		for (var i = 0; i < svg.style.length; ++i) {
 			name = svg.style[i];
-			value = svg.style[name];
+			cssName = name.replace(/-(.)/g, function(match, p) {
+				return p.toUpperCase();
+			});
+			value = svg.style[cssName];
 			this._applyAttributeOrStyle(name, value, item, svg);
 		}
 		for (var i = 0; i < svg.attributes.length; ++i) {
@@ -354,6 +364,9 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 *   - the svg (dom element)
 	 */
 	 _applyAttributeOrStyle: function(name, value, item, svg) {
+		if (!value) {
+			return;
+		}
 		switch (name) {
 			case 'id':
 				item.name = value;
