@@ -142,7 +142,7 @@ var ImportSVG = this.ImportSVG = Base.extend({
 		var size = new Size(width, height);
 		var rectangle = new Rectangle(topLeft, size);
 
-		if (rx > 0 || ry > 0) {
+		if (rx && ry) {
 			var cornerSize = new Size(rx, ry);
 			rectangle = new Path.RoundRectangle(rectangle, cornerSize);
 		} else {
