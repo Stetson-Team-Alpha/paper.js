@@ -135,9 +135,9 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
 			case 'rect':
-				svgEle = document.createElementNS(this.NS, 'rect');
 				var width = pointArray[3].getX() - pointArray[0].getX();
 				var height = pointArray[0].getY() - pointArray[1].getY();
+				svgEle = document.createElementNS(this.NS, 'rect');
 				svgEle.setAttribute('x', pointArray[1].getX());
 				svgEle.setAttribute('y', pointArray[1].getY());
 				svgEle.setAttribute('width', width);
@@ -362,7 +362,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 						checkPointValues = false;
 					}	
 				}	
-				if(checkPointValues == true)
+				if(checkPointValues == true) {
 					if(handleInArray[0].getY() === handleInArray[3].getX() && handleOutArray[0].getY() === handleOutArray[3].getX()) {
 						type = 'circle';
 					} else {
