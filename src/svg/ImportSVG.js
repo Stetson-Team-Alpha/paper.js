@@ -14,7 +14,8 @@ var ImportSVG = this.ImportSVG = Base.extend({
 	 * returns Paper.js Item
 	 */
 	importSVG: function(svg) {
-		var item = null;
+		var item;
+		var symbol;
 		switch (svg.nodeName.toLowerCase()) {
 			case 'line':
 				item = this._importLine(svg);
@@ -42,6 +43,11 @@ var ImportSVG = this.ImportSVG = Base.extend({
 			case 'polyline':
 				item = this._importPoly(svg);
 				break;
+			case 'symbol':
+				item = this._importGroup(svg);
+				this._importAttributesAndStyles(svg, item);
+				symbol = new Symbol(item);
+				item = null;
 			default:
 				//Not supported yet.
 		}
