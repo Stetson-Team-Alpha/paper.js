@@ -144,8 +144,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle.setAttribute('height', height);
 				break;
 			case 'roundRect':
-				var rx = pointArray[4].getX() - pointArray[3].getX();
-				var ry = pointArray[3].getY() - pointArray[4].getY();
+				var rx = pointArray[5].getX() - pointArray[4].getX();
+				var ry = pointArray[5].getY() - pointArray[4].getY();
 				var width = pointArray[6].getX() - pointArray[1].getX();
 				var height = pointArray[0].getY() - pointArray[3].getY();
 				svgEle = document.createElementNS(this.NS, 'rect');
