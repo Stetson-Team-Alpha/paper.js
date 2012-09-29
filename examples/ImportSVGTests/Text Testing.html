@@ -16,17 +16,10 @@
 	</script>
 </head>
 <body>	
-	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:500; height:1000px;" id="svg">
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:500px; height:1000px;" id="svg">
 		<text x="20" y="15" stroke="green" fill="green" style="font:15px arial;" id="text">Plain SVG Text</text>
 		
 		<text x="20" y="50" fill="red" transform="rotate(30 20,40)">Rotated SVG Text</text>
-		
-<defs>
-    <path id="path1" d="M75,20 a1,1 0 0,0 100,0" />
-  </defs>
-  <text x="10" y="200" style="fill:red;">
-    <textPath xlink:href="#path1">Text on Path Text on Path</textPath>
-  </text>
   
 	</svg>
 	<canvas id="canvas" width="500" height="1000"></canvas>
