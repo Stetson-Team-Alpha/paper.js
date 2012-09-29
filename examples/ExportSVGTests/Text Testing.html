@@ -2,37 +2,29 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Random Path Testing</title>
+	<title>Text Testing</title>
 	<link rel="stylesheet" href="../css/style.css">
 	<script type="text/javascript" src="../../dist/paper.js"></script>
 
 </head>
 <body>	
-	<canvas id="canvas" width="500px" height="500px"></canvas>
+	<canvas id="canvas" width="500px" height="1000px"></canvas>
 		<script type="text/paperscript" canvas="canvas">
 		initializePath();
 
 		function initializePath() {
-		var center = new Point(100, 100);
-	var sides = 3;
-	var radius = 50;
-	var triangle = new Path.RegularPolygon(center, sides, radius);
-	triangle.fillColor = 'black';
+			
+			
+		var text = new PointText(new Point(50, 100));
+		text.fillColor = 'black';
+		text.content = 'This is a test';
 		
-		var center = new Point(100, 300);
-	var sides = 10;
-	var radius = 50;
-	var decahedron = new Path.RegularPolygon(center, sides, radius);
-	decahedron.fillColor = 'black';
-	
-	var center = new Point(100, 400);
-	var points = 6;
-	var radius1 = 20;
-	var radius2 = 50;
-	var path = new Path.Star(center, points, radius1, radius2);
-	path.fillColor = 'black';
-	
-			var esvg = new ExportSVG();
+		var text = new PointText(new Point(100, 150));
+		text.fillColor = 'red';
+		text.strokeWidth = '4';
+		text.content = 'This is also a test';
+
+		var esvg = new ExportSVG();
 		//esvg.exportProject(paper.project);
 		var output = esvg.exportProject(paper.project);
            console.log(output);
@@ -40,8 +32,6 @@
            test.innerHTML = "";
            test.appendChild (output);   
 		      }
-			 
-
 
 		// Reposition the path whenever the window is resized:
 		function onResize(event) {
