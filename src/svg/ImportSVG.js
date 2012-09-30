@@ -233,18 +233,31 @@ var ImportSVG = this.ImportSVG = Base.extend(/** @Lends ImportSVG# */{
 		var x = svgText.x.baseVal.getItem(0).value || 0;
 		var y = svgText.y.baseVal.getItem(0).value || 0;
 
+		var dx = 0;
+		var dy = 0;
+		if (svgText.dx.baseVal.numberOfItems) {
+			dx = svgText.dx.baseVal.getItem(0).value || 0;
+		}
+		if (svgText.dy.baseVal.numberOfItems) {
+			dy = svgText.dy.baseVal.getItem(0).value || 0;
+		}
+		
+		var textLength = svgText.textLength.baseVal.value || 0;
+		
 		/* Not supported by Paper.js
 		x; //multiple values for x
 		y; //multiple values for y
-		var dx; //character kerning
-		var dy; //character baseline
+		dx; //multiple values for x
+		dy; //multiple values for y
 		var rotate; //character rotation
-		var textLength; //the width of the containing box
 		var lengthAdjust;
 		*/
 		var textContent = svgText.textContent || "";
-		var topLeft = new Point(x, y);
-		var text = new PointText(topLeft);
+		var bottomLeft = new Point(x, y);
+		
+		bottomLeft = bottomLeft.add([dx, dy]);
+		bottomLeft = bottomLeft.subtract([textLength / 2, 0]);
+		var text = new PointText(bottomLeft);
 		text.content = textContent;
 
 		return text;
