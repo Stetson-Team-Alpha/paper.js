@@ -19,12 +19,23 @@
 		var path1 = new Path.Rectangle(rectangle1);
 		path1.strokeColor = 'black';
 		path1.fillColor = 'red';
+		path1.id = "square1";
+		path1.strokeCap = "square";
+		path1.opacity = ".1";
+		path1.dashArray = "[5, 2]";
+		path1.dashOffset = "0";
 	
 		var point2 = new Point(75, 75);
 		var point22 = new Point(100, 100);
 		var path2 = new Path.Rectangle(point2, point22);
 		path2.strokeColor = 'red';
+		path2.strokeWidth = '4';
 		path2.fillColor = 'blue';
+		path2.id = "square2";
+		path2.strokeCap = "butt";
+		path2.opacity = "1";
+		path2.dashArray = "[1, 1]";
+		path2.dashOffset = "10";
 	
 		var point3 = new Point(150, 150);
 		var size3 = new Size(50, 50);
