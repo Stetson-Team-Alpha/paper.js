@@ -401,81 +401,12 @@ test('compare oval values', function() {
 
 });
 
-test('compare negative oval values', function() {
-        var svgns = 'http://www.w3.org/2000/svg'
-	var shape = document.createElementNS(svgns, 'ellipse');
-	var cx = -100,
-	cy = -80,
-	rx = -50;
-	ry = -30;
-	shape.setAttribute('cx', cx);
-	shape.setAttribute('cy', cy);
-	shape.setAttribute('rx', rx);
-	shape.setAttribute('ry', ry);
-	
-	var center = new Point(cx, cy);
-	var offset = new Point(rx, ry);
-	var topLeft = center.subtract(offset);
-	var bottomRight = center.add(offset);
-
-	var rect = new Rectangle(topLeft, bottomRight);
-	var oval = new Path.Oval(rect);
-
-	var epjs = new ExportSVG();
-	var exportedOval = epjs.exportPath(oval);
-
-	var shapecx = shape.getAttribute('cx');
-	var shapecy = shape.getAttribute('cy');
-	var shaperx = shape.getAttribute('rx');
-	var shapery = shape.getAttribute('ry');
-
-	var exportedcx = exportedOval.getAttribute('cx');
-	var exportedcy = exportedOval.getAttribute('cy');
-	var exportedrx = exportedOval.getAttribute('rx');
-	var exportedry = exportedOval.getAttribute('ry');
-	
-	equals(shapecx, exportedcx);
-	equals(shapecy, exportedcy);
-	equals(shaperx, exportedrx);
-	equals(shapery, exportedry);
-});
-
 test('compare circle values', function() {
 	var svgns = 'http://www.w3.org/2000/svg'
 	var shape = document.createElementNS(svgns, 'circle');
 	var cx = 100,
 		cy = 80,
 		r = 50;	
-	shape.setAttribute('cx', cx);
-	shape.setAttribute('cy', cy);
-	shape.setAttribute('r', r);
-
-	var center = new Point(cx, cy);
-	var circle = new Path.Circle(center, r);
-
-	var epjs = new ExportSVG();
-	var exportedCircle = epjs.exportPath(circle);
-
-	var shapecx = shape.getAttribute('cx');
-	var shapecy = shape.getAttribute('cy');
-	var shaper = shape.getAttribute('r');
-
-	var exportedcx = exportedCircle.getAttribute('cx');
-	var exportedcy = exportedCircle.getAttribute('cy');
-	var exportedr = exportedCircle.getAttribute('r');
-
-	equals(shapecx, exportedcx);
-	equals(shapecy, exportedcy);
-	equals(shaper, exportedr);
-
-});
-
-test('compare negative circle values', function() {
-	var svgns = 'http://www.w3.org/2000/svg'
-	var shape = document.createElementNS(svgns, 'circle');
-	var cx = -100,
-		cy = -80,
-		r = -50;
 	shape.setAttribute('cx', cx);
 	shape.setAttribute('cy', cy);
 	shape.setAttribute('r', r);
