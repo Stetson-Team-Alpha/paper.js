@@ -135,25 +135,28 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
 			case 'rect':
-				//var width = pointArray[3].getX() - pointArray[0].getX();
-				//var height = pointArray[0].getY() - pointArray[1].getY();
 				var width = pointArray[0].getDistance(pointArray[3], false);
 				var height = pointArray[0].getDistance(pointArray[1], false);
 				svgEle = document.createElementNS(this.NS, 'rect');
-				//svgEle.setAttribute('x', pointArray[1].getX());
-				//svgEle.setAttribute('y', pointArray[1].getY());
-				svgEle.setAttribute('x', path.bounds.topLeft.getX());
-				svgEle.setAttribute('y', path.bounds.topLeft.getY());
+				svgEle.setAttribute('x', 100);
+				svgEle.setAttribute('y', 100);
 				svgEle.setAttribute('width', width);
 				svgEle.setAttribute('height', height);
 				break;
 			case 'roundRect':
-				var rx = pointArray[4].getDistance(path.bounds.topRight, false);
-				var ry = pointArray[4].getDistance(path.bounds.topRight, false);
-				//var rx = pointArray[4].getDistance(pointArray[5], false);
-				//var ry = pointArray[4].getDistance(pointArray[5], false);
-				var width = pointArray[1].getDistance(pointArray[6], false);
-				var height = pointArray[0].getDistance(pointArray[3], false);
+				var d1 = pointArray[1].getDistance(pointArray[6], false);
+				var d2 = pointArray[0].getDistance(pointArray[7], false);
+				var d3 = (blah - blah2) / 2;
+				var d4 = pointArray[0].getDistance(pointArray[3], false);
+				var d5 = pointArray[1].getDistance(pointArray[2], false);
+				var d6 = (blarg - blarg2) / 2;
+				var point = new Point((pointArray[3].getX() - d3), (pointArray[2].getY() - d6)); 
+				var point2 = new Point((pointArray[0].getX() - d3), (pointArray[1].getY() + d6));
+				var point3 = new Point((pointArray[4].getX() + d3), (pointArray[5].getY() - d6));
+				var width = Math.round(d3);
+				var height = Math.round(d6);
+				var rx = pointArray[3].getX() - point.x;
+				var ry = pointArray[2].getY() - point.y;
 				svgEle = document.createElementNS(this.NS, 'rect');
 				svgEle.setAttribute('x', path.bounds.topLeft.getX());
 				svgEle.setAttribute('y', path.bounds.topLeft.getY());
@@ -285,7 +288,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		}
 		if(type != 'text' && type != undefined) {
 			var angle = this._transformCheck(path, pointArray, type) + 90;
-			svgEle.setAttribute('transform', 'rotate(' + angle + ',' + path.getPosition().getX() + ',' +path.getPosition().getY() + ')');
+			svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + Math.round(path.getPosition().getX()) + ',' + Math.round(path.getPosition().getY()) + ')');
 		}
 		return svgEle;
 	},
@@ -401,8 +404,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//If there aren't any curves (if curves = false), then it checks if the type is a rectangle, a polygon, a polyline, or simply a line.
 		if(curves){
 			if(segArray.length == 8) {
-				dPoint12 = pointArray[0].getY() - pointArray[3].getY();
-				dPoint34 = pointArray[7].getY() - pointArray[4].getY();
+				dPoint12 = Math.round(pointArray[0].getDistance(pointArray[3], false));
+				dPoint34 = Math.round(pointArray[7].getDistance(pointArray[4], false));
 				if(dPoint12 == dPoint34) {
 					type = 'roundRect';
 				}
@@ -425,8 +428,9 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			} 
 		} else if(!curves) {
 			if(segArray.length == 4) {
-				dPoint12 = pointArray[0].getDistance(pointArray[1], false);
-				dPoint34 = pointArray[3].getDistance(pointArray[2], false);
+				dPoint12 = Math.round(pointArray[0].getDistance(pointArray[1], false));
+				dPoint34 = Math.round(pointArray[3].getDistance(pointArray[2], false));
+				console.log(dPoint12 + " " + dPoint34);
 				if(dPoint12 == dPoint34) {
 					type = 'rect';
 				}
