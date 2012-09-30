@@ -68,7 +68,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	 */
 	exportLayer: function(layer) {
 		return this.exportGroup(layer);
-		}
 	},
 
 
