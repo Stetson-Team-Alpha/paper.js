@@ -135,22 +135,28 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//switch statement that determines what type of SVG element to add to the SVG Object
 		switch (type) {
 			case 'rect':
-				var width = pointArray[3].getX() - pointArray[0].getX();
-				var height = pointArray[0].getY() - pointArray[1].getY();
+				//var width = pointArray[3].getX() - pointArray[0].getX();
+				//var height = pointArray[0].getY() - pointArray[1].getY();
+				var width = pointArray[0].getDistance(pointArray[3], false);
+				var height = pointArray[0].getDistance(pointArray[1], false);
 				svgEle = document.createElementNS(this.NS, 'rect');
-				svgEle.setAttribute('x', pointArray[1].getX());
-				svgEle.setAttribute('y', pointArray[1].getY());
+				//svgEle.setAttribute('x', pointArray[1].getX());
+				//svgEle.setAttribute('y', pointArray[1].getY());
+				svgEle.setAttribute('x', path.bounds.topLeft.getX());
+				svgEle.setAttribute('y', path.bounds.topLeft.getY());
 				svgEle.setAttribute('width', width);
 				svgEle.setAttribute('height', height);
 				break;
 			case 'roundRect':
-				var rx = pointArray[5].getX() - pointArray[4].getX();
-				var ry = pointArray[5].getY() - pointArray[4].getY();
-				var width = pointArray[6].getX() - pointArray[1].getX();
-				var height = pointArray[0].getY() - pointArray[3].getY();
+				var rx = pointArray[4].getDistance(path.bounds.topRight, false);
+				var ry = pointArray[4].getDistance(path.bounds.topRight, false);
+				//var rx = pointArray[4].getDistance(pointArray[5], false);
+				//var ry = pointArray[4].getDistance(pointArray[5], false);
+				var width = pointArray[1].getDistance(pointArray[6], false);
+				var height = pointArray[0].getDistance(pointArray[3], false);
 				svgEle = document.createElementNS(this.NS, 'rect');
-				svgEle.setAttribute('x', pointArray[3].getX());
-				svgEle.setAttribute('y', pointArray[4].getY());
+				svgEle.setAttribute('x', path.bounds.topLeft.getX());
+				svgEle.setAttribute('y', path.bounds.topLeft.getY());
 				svgEle.setAttribute('rx', rx);
 				svgEle.setAttribute('ry', ry);
 				svgEle.setAttribute('width', width);
@@ -277,10 +283,51 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			}
 			svgEle.setAttribute('visibility', visString);
 		}
+		if(type != 'text' && type != undefined) {
+			var angle = this._transformCheck(path, pointArray, type) + 90;
+			svgEle.setAttribute('transform', 'rotate(' + angle + ',' + path.getPosition().getX() + ',' +path.getPosition().getY() + ')');
+		}
 		return svgEle;
 	},
 
 
+		_transformCheck: function(path, pointArray, type) {
+			console.log('here for a ' + type );
+			var topMidBoundx = (path.bounds.topRight.getX() + path.bounds.topLeft.getX() )/2;
+			var topMidBoundy = (path.bounds.topRight.getY() + path.bounds.topLeft.getY() )/2;
+			var topMidBound = new Point(topMidBoundx, topMidBoundy);
+			var centerPoint = path.getPosition();
+			var topMidPathx;
+			var topMidPathy;
+			var topMidPath;
+			switch (type) {
+				case 'rect':
+					topMidPathx = (pointArray[1].getX() + pointArray[2].getX() )/2;
+					topMidPathy = (pointArray[1].getY() + pointArray[2].getY() )/2;
+					topMidPath = new Point(topMidPathx, topMidPathy);
+					break;
+				case 'ellipse':
+					topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
+					break;
+				case 'circle':
+					topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
+					break;
+				case 'roundRect':
+					topMidPathx = (pointArray[3].getX() + pointArray[4].getX() )/2;
+					topMidPathy = (pointArray[3].getY() + pointArray[4].getY() )/2;
+					topMidPath = new Point(topMidPathx, topMidPathy);
+					break;
+				default:
+					//Nothing happens here
+					break;
+			}
+			var deltaY = topMidPathy - centerPoint.getY();
+			var deltaX = topMidPathx - centerPoint.getX();
+			var angleInDegrees = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+			console.log(angleInDegrees + 90);
+			return angleInDegrees;
+		},
+		
 		//pointstring is formatted in the way the SVG XML will be reading
 		//Namely, a point and the way to traverse to that point
 		pathSetup: function(path, pointArray, hIArray, hOArray) {
@@ -292,7 +339,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			var y2;
 			var handleOut1;
 			var handleIn2;
-			pointString += 'M' + pointArray[0].getX() + ',' + pointArray[0].getY();
+			pointString += 'M' + pointArray[0].getX() + ',' + pointArray[0].getY() + ' ';
 			//Checks 2 points and the angles in between the 2 points
 			for (i = 0; i < pointArray.length-1; i++) {
 				x1 = pointArray[i].getX();
@@ -378,8 +425,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			} 
 		} else if(!curves) {
 			if(segArray.length == 4) {
-				dPoint12 = pointArray[0].getY() - pointArray[1].getY();
-				dPoint34 = pointArray[3].getY() - pointArray[2].getY();
+				dPoint12 = pointArray[0].getDistance(pointArray[1], false);
+				dPoint34 = pointArray[3].getDistance(pointArray[2], false);
 				if(dPoint12 == dPoint34) {
 					type = 'rect';
 				}
