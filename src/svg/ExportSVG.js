@@ -28,7 +28,7 @@
  */
 
 var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
-	//initialize the svgObj and what ever else.
+	//initialize the svgObj
 	initialize: function() {
 		this.NS = 'http://www.w3.org/2000/svg';
 		this.svgObj = document.createElementNS(this.NS, 'svg');
@@ -54,7 +54,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		return this.svgObj;
 	},
 
-
 	/**
 	 * 
 	 * Takes the selected Paper.js layer and parses all groups
@@ -69,7 +68,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	exportLayer: function(layer) {
 		return this.exportGroup(layer);
 	},
-
 
 	/**
 	 * 
@@ -92,7 +90,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgG.appendChild(this.exportPath(curChild));
 			}
 		}
-
 		return svgG;
 	},
 	
@@ -107,19 +104,15 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	 * @return {SVG DOM} svgPath An SVG object of the imported path
 	 */
 	exportPath: function(path) {
-		console.log(path);
 		var svgEle;
-
 		//Getting all of the segments(a point, a HandleIn and a HandleOut) in the path
 		var segArray;
 		var pointArray;
 		var handleInArray;
 		var handleOutArray;
 		//finding the type of path to export
-		if(path.content){
+		if(path.content) {
 			type = 'text';
-		} else if(path.symbol) {
-			type = 'symbol';
 		} else {
 			//Values are only defined if the path is not text because
 			// text does not have these values
@@ -147,17 +140,16 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle.setAttribute('height', height);
 				break;
 			case 'roundRect':
-				var d1 = pointArray[1].getDistance(pointArray[6], false);
-				var d2 = pointArray[0].getDistance(pointArray[7], false);
-				var d3 = (d1 - d2) / 2;
-				var d4 = pointArray[0].getDistance(pointArray[3], false);
-				var d5 = pointArray[1].getDistance(pointArray[2], false);
-				var d6 = (d4 - d5) / 2;
-				var point = new Point((pointArray[3].getX() - d3), (pointArray[2].getY() - d6)); 
-				var point2 = new Point((pointArray[0].getX() - d3), (pointArray[1].getY() + d6));
-				var point3 = new Point((pointArray[4].getX() + d3), (pointArray[5].getY() - d6));
-				var width = Math.round(d1);
-				var height = Math.round(d4);
+				//d variables and point are used to determine the rounded corners for the rounded rectangle
+				var dx1 = pointArray[1].getDistance(pointArray[6], false);
+				var dx2 = pointArray[0].getDistance(pointArray[7], false);
+				var dx3 = (dx1 - dx2) / 2;
+				var dy1 = pointArray[0].getDistance(pointArray[3], false);
+				var dy2 = pointArray[1].getDistance(pointArray[2], false);
+				var dy3 = (dy1 - dy2) / 2;
+				var point = new Point((pointArray[3].getX() - dx3), (pointArray[2].getY() - dy3)); 
+				var width = Math.round(dx1);
+				var height = Math.round(dy1);
 				var rx = pointArray[3].getX() - point.x;
 				var ry = pointArray[2].getY() - point.y;
 				svgEle = document.createElementNS(this.NS, 'rect');
@@ -186,7 +178,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle = document.createElementNS(this.NS, 'ellipse');
 				var radiusX = (pointArray[2].getDistance(pointArray[0], false)) / 2;
 				var radiusY = (pointArray[3].getDistance(pointArray[1], false)) /2;
-				//var cx = pointArray[0].getX() + radiusX;
 				svgEle.setAttribute('cx', path.bounds.center.x);
 				svgEle.setAttribute('cy', path.bounds.center.y);
 				svgEle.setAttribute('rx', radiusX);
@@ -222,47 +213,40 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 					svgEle.setAttribute('font-size',path.characterStyle.fontSize);
 				}
 				svgEle.textContent = path.getContent();
-				//svgEle.insertData(path.getContent()); //Gives Error
 				break;
 			default:
 				svgEle = document.createElementNS(this.NS, 'path');
 				svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
 				break;
 		}
+		//If the object is a circle, ellipse, rectangle, or rounded rectangle, it will find the angle 
+		//found by the transformCheck method and make a path that accommodates for the transformed object
 		if(type != 'text' && type != undefined && type != 'polygon' &&  type != 'polyline' && type != 'line') {
 			var angle = this._transformCheck(path, pointArray, type) + 90;
+			console.log(angle);
 			if(angle != 0) {
 				if(type == 'rect' || type == 'roundRect') {
 					svgEle = document.createElementNS(this.NS, 'path');
 					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
-				/*} else if (type == 'circle' || type == 'ellipse'){
-					svgEle = document.createElementNS(this.NS, 'path');
-					console.log(pointArray);
-					pointArray[4] = pointArray[0];
-					console.log(pointArray);
-					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);*/
 				} else {
-					//svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + path.bounds.center.x + ',' + path.bounds.center.y + ')');
 					svgEle = document.createElementNS(this.NS, 'path');
 					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
 				}
 			} 
 		}
-	
 		if(type == 'text') {
 			svgEle.setAttribute('transform','rotate(' + path.matrix.getRotation() + ',' + path.getPoint().getX() + ',' +path.getPoint().getY() +')');
 		}
-		//checks if there is a stroke color in the passed in path
-		//adds an SVG element attribute with the defined stroke color
 		if(path.id != undefined) {
 			svgEle.setAttribute('id', path.id);
 		}
+		//checks if there is a stroke color in the passed in path
+		//adds an SVG element attribute with the defined stroke color
 		if (path.strokeColor != undefined) {
 			svgEle.setAttribute('stroke', path.strokeColor.toCssString());
 		}
 		//same thing as above except checking for a fill color
 		if (path.fillColor != undefined) {
-			//Cause of fill issues- CHECK THIS
 			svgEle.setAttribute('fill', path.fillColor.toCssString());
 		} else {
 			svgEle.setAttribute('fill', 'rgba(0,0,0,0)');
@@ -275,15 +259,19 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		if(path.name != undefined) {
 			svgEle.setAttribute('name', path.name);
 		}
+		//same thing as stroke color except with the strokeCap
 		if(path.strokeCap != undefined) {
 			svgEle.setAttribute('stroke-linecap', path.strokeCap);
 		}
+		//same thing as stroke color except with the strokeJoin
 		if(path.strokeJoin != undefined) {
 			svgEle.setAttribute('stroke-linejoin', path.strokeJoin);
 		}
+		//same thing as stroke color except with the opacity
 		if(path.opacity != undefined) {
 			svgEle.setAttribute('opacity', path.opacity);
 		}
+		//checks to see if there the dashArray is set, then adds the attribute if there is.
 		if(path.dashArray[0] != undefined) {
 			var dashVals = '';
 			for (var i in path.dashArray) {
@@ -295,12 +283,15 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			}
 			svgEle.setAttribute('stroke-dasharray', dashVals);
 		}
+		//same thing as stroke color except with the dash offset
 		if(path.dashOffset != undefined) {
 			svgEle.setAttribute('stroke-dashoffset', path.dashOffset);
 		}
+		//same thing as stroke color except with the miter limit
 		if(path.miterLimit != undefined) {
 			svgEle.setAttribute('stroke-miterlimit', path.miterLimit);
 		}
+		//same thing as stroke color except with the visibility
 		if(path.visibility != undefined) {
 			var visString = '';
 			if(path.visibility) {
@@ -313,8 +304,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		return svgEle;
 	},
 
-	_transformCheck: function(path, pointArray, type) {
-		//console.log('here for a ' + type );
+	//Determines whether the object has been transformed or not through determining the angle
+	_determinesIfTransformed: function(path, pointArray, type) {
 		var topMidBoundx = (path.bounds.topRight.getX() + path.bounds.topLeft.getX() )/2;
 		var topMidBoundy = (path.bounds.topRight.getY() + path.bounds.topLeft.getY() )/2;
 		var topMidBound = new Point(topMidBoundx, topMidBoundy);
@@ -346,7 +337,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		var deltaY = topMidPath.y - centerPoint.getY();
 		var deltaX = topMidPath.x - centerPoint.getX();
 		var angleInDegrees = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
-		//console.log(angleInDegrees + 90);
 		return angleInDegrees;
 	},
 	
@@ -419,27 +409,26 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		var segHandleIn;
 		var segHandleOut;
 		for( var i in segArray){
-			//Checks for any curves. Differentiates between straight things(line, polyline, rect) and
-			// curvy things  (circle, ellipse, path).
+			//Checks for any curves (if the handles have values). Differentiates between straight objects(line, polyline, rect, and polygon) and
+			//and objects with curves(circle, ellipse, roundedRectangle).
 			segHandleIn = segArray[i].getHandleIn();
 			segHandleOut = segArray[i].getHandleOut();
 			curves = segHandleIn.getX() != 0 || segHandleIn.getY() != 0 ? true : curves;
 			curves = segHandleOut.getX() != 0 || segHandleOut.getY() != 0 ? true : curves;			
 		}
-		//Cleaned up the logic so it's a little easier to read and includes path.
-		//Kept the old logic for reference. Also, I kept the really long logic lines in their correct
-		//places, because I couldn't figure them out completely.
 		//Checks for curves in the passed in segments
 		//Checks if the type of the passed in path is a rounded rectangle, an ellipse, a circle, or if it's simply a path
 		//If there aren't any curves (if curves = false), then it checks if the type is a rectangle, a polygon, a polyline, or simply a line.
 		if(curves){
 			if(segArray.length == 8) {
+				//if the distance between (point0 and point3) and (point7 and point4) are equal then it is a roundedRectangle
 				dPoint12 = Math.round(pointArray[0].getDistance(pointArray[3], false));
 				dPoint34 = Math.round(pointArray[7].getDistance(pointArray[4], false));
 				if(dPoint12 == dPoint34) {
 					type = 'roundRect';
 				}
 			} else if(segArray.length == 4) {
+				//checks if the values of the point have values similar to circles and ellipses
 				var checkPointValues = true;
 				for(i = 0; i < pointArray.length && checkPointValues == true; i++) {
 					if(handleInArray[i].getX() != 0 || handleInArray[i].getY() != 0 && Math.round(Math.abs(handleInArray[i].getX())) === Math.round(Math.abs(handleOutArray[i].getX())) && Math.round(Math.abs(handleInArray[i].getY())) === Math.round(Math.abs(handleOutArray[i].getY()))) {
@@ -448,13 +437,11 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 						checkPointValues = false;
 					}	
 				}	
-				//console.log(checkPointValues);
 				if(checkPointValues == true) {
-					//RENAME VARIABLES!!
-					var c1 = Math.round(pointArray[0].getDistance(pointArray[2], false));
-					var c2 = Math.round(pointArray[1].getDistance(pointArray[3], false));
-					//console.log(c1 + " " + c2);
-					if(c1 == c2) {
+					//if the distance between (point0 and point2) and (point1 and point3) are equal, then it is a circle
+					var d1 = Math.round(pointArray[0].getDistance(pointArray[2], false));
+					var d2 = Math.round(pointArray[1].getDistance(pointArray[3], false));
+					if(d1 == d2) {
 						type = 'circle';
 					} else {
 						type = 'ellipse';
@@ -463,25 +450,27 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			} 
 		} else if(!curves) {
 			if(segArray.length == 4) {
+				//if the distance between (point0 and point1) and (point2 and point3) are equal, then it is a rectangle
 				dPoint12 = Math.round(pointArray[0].getDistance(pointArray[1], false));
 				dPoint34 = Math.round(pointArray[3].getDistance(pointArray[2], false));
-				//console.log(dPoint12 + " " + dPoint34);
 				if(dPoint12 == dPoint34) {
 					type = 'rect';
 				}
 			} else if(segArray.length >= 3) {
+				//If it is an object with more than 3 segments and the path is closed, it is a polygon
 				if(path.getClosed()) {
 					type = 'polygon';
 				} else {
 					type = 'polyline';
 				}
 			} else {
+				//if all of the handle values are == 0 and there are only 2 segments, it is a line
 				type = 'line';
 			}	
 		} else {
 			type = null;
 		}
-		//console.log(type);
+		console.log(type);
 		return type;
 	}
 });
