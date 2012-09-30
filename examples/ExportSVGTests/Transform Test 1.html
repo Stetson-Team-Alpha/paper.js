@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Random Path Testing</title>
+	<title>Transform Testing</title>
 	<link rel="stylesheet" href="../css/style.css">
 	<script type="text/javascript" src="../../dist/paper.js"></script>
 
@@ -13,25 +13,18 @@
 		initializePath();
 
 		function initializePath() {
-			var center = new Point(100, 100);
-			var sides = 3;
-			var radius = 50;
-			var triangle = new Path.RegularPolygon(center, sides, radius);
-			triangle.fillColor = 'black';
-		
-			var center = new Point(100, 300);
-			var sides = 10;
-			var radius = 50;
-			var decahedron = new Path.RegularPolygon(center, sides, radius);
-			decahedron.fillColor = 'black';
-	
-			var center = new Point(100, 400);
-			var points = 6;
-			var radius1 = 20;
-			var radius2 = 50;
-			var path = new Path.Star(center, points, radius1, radius2);
-			path.fillColor = 'black';
-	
+		var circlePath = new Path.Circle(new Point(280, 100), 25);
+		circlePath.strokeColor = 'black';
+		circlePath.fillColor = 'white';
+
+		var clones = 30;
+		var angle = 360 / clones;
+
+		for(var i = 0; i < clones; i++) {
+		var clonedPath = circlePath.clone();
+		clonedPath.rotate(angle * i, circlePath.bounds.topLeft);
+	};
+			
 			var esvg = new ExportSVG();
 		//esvg.exportProject(paper.project);
 			var output = esvg.exportProject(paper.project);
@@ -39,7 +32,7 @@
 			var test = document.getElementById('svg')
 			test.innerHTML = "";
 			test.appendChild (output);   
-		      }
+				  }
 			 
 
 

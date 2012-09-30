@@ -15,23 +15,23 @@
 		function initializePath() {
 			
 			
-		var text = new PointText(new Point(50, 100));
-		text.fillColor = 'black';
-		text.content = 'This is a test';
-		
-		var text = new PointText(new Point(100, 150));
-		text.fillColor = 'red';
-		text.strokeWidth = '4';
-		text.content = 'This is also a test';
+			var text = new PointText(new Point(50, 100));
+			text.fillColor = 'black';
+			text.content = 'This is a test';
+			
+			var text = new PointText(new Point(100, 150));
+			text.fillColor = 'red';
+			text.strokeWidth = '4';
+			text.content = 'This is also a test';
 
-		var esvg = new ExportSVG();
-		//esvg.exportProject(paper.project);
-		var output = esvg.exportProject(paper.project);
-           console.log(output);
-		var test = document.getElementById('svg')
-           test.innerHTML = "";
-           test.appendChild (output);   
-		      }
+			var esvg = new ExportSVG();
+			//esvg.exportProject(paper.project);
+			var output = esvg.exportProject(paper.project);
+			   console.log(output);
+			var test = document.getElementById('svg')
+			   test.innerHTML = "";
+			   test.appendChild (output);   
+				  }
 
 		// Reposition the path whenever the window is resized:
 		function onResize(event) {

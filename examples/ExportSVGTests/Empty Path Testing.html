@@ -13,23 +13,23 @@
 		initializePath();
 
 		function initializePath() {
-		var path = new Path();
-		path.strokeColor = 'black';
-		path.add(new Point(30, 30));
-		path.add(new Point(100, 100));
+			var path = new Path();
+			path.strokeColor = 'black';
+			path.add(new Point(30, 30));
+			path.add(new Point(100, 100));
 		
-		var segments = [new Point(30, 90), new Point(100, 150)];
-		var path2 = new Path(segments);
-		path2.strokeColor = 'yellow';
+			var segments = [new Point(30, 90), new Point(100, 150)];
+			var path2 = new Path(segments);
+			path2.strokeColor = 'yellow';
 			
 			
 			var esvg = new ExportSVG();
 		//esvg.exportProject(paper.project);
-		var output = esvg.exportProject(paper.project);
-           console.log(output);
-		var test = document.getElementById('svg')
-           test.innerHTML = "";
-           test.appendChild (output);   
+			var output = esvg.exportProject(paper.project);
+			console.log(output);
+			var test = document.getElementById('svg')
+			test.innerHTML = "";
+			test.appendChild (output);   
 		      }
 			 
 
