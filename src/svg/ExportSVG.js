@@ -108,6 +108,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	 * @return {SVG DOM} svgPath An SVG object of the imported path
 	 */
 	exportPath: function(path) {
+		console.log(path);
 		var svgEle;
 
 		//Getting all of the segments(a point, a HandleIn and a HandleOut) in the path
@@ -231,26 +232,24 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		}
 		if(type != 'text' && type != undefined && type != 'polygon' &&  type != 'polyline' && type != 'line') {
 			var angle = this._transformCheck(path, pointArray, type) + 90;
-			//var aroundX;
-			//var aroundY;
 			if(angle != 0) {
 				if(type == 'rect' || type == 'roundRect') {
-					/*var aroundX = (pointArray[1].getX() + pointArray[3].getX()) /2;
-					var aroundY = (pointArray[1].getY() + pointArray[3].getY()) /2;
-					console.log('rotated around center');
-				} else if (type == 'roundRect') {
-				} else {
-					aroundX = Math.round(path.getPosition().getX());
-					aroundY = Math.round(path.getPosition().getY())
-				}
-				svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + aroundX + ',' + aroundY + ')');*/
 					svgEle = document.createElementNS(this.NS, 'path');
 					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
+				/*} else if (type == 'circle' || type == 'ellipse'){
+					svgEle = document.createElementNS(this.NS, 'path');
+					console.log(pointArray);
+					pointArray[4] = pointArray[0];
+					console.log(pointArray);
+					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);*/
 				} else {
-					svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + path.bounds.center.x + ',' + path.bounds.center.y + ')');
+					//svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + path.bounds.center.x + ',' + path.bounds.center.y + ')');
+					svgEle = document.createElementNS(this.NS, 'path');
+					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
 				}
-			}
+			} 
 		}
+	
 		if(type == 'text') {
 			svgEle.setAttribute('transform','rotate(' + path.matrix.getRotation() + ',' + path.getPoint().getX() + ',' +path.getPoint().getY() +')');
 		}
@@ -315,81 +314,92 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		return svgEle;
 	},
 
-
-		_transformCheck: function(path, pointArray, type) {
-			console.log('here for a ' + type );
-			var topMidBoundx = (path.bounds.topRight.getX() + path.bounds.topLeft.getX() )/2;
-			var topMidBoundy = (path.bounds.topRight.getY() + path.bounds.topLeft.getY() )/2;
-			var topMidBound = new Point(topMidBoundx, topMidBoundy);
-			var centerPoint = path.getPosition();
-			var topMidPathx;
-			var topMidPathy;
-			var topMidPath;
-			switch (type) {
-				case 'rect':
-					topMidPathx = (pointArray[1].getX() + pointArray[2].getX() )/2;
-					topMidPathy = (pointArray[1].getY() + pointArray[2].getY() )/2;
-					topMidPath = new Point(topMidPathx, topMidPathy);
-					break;
-				case 'ellipse':
-					topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
-					break;
-				case 'circle':
-					topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
-					break;
-				case 'roundRect':
-					topMidPathx = (pointArray[3].getX() + pointArray[4].getX())/2;
-					topMidPathy = (pointArray[3].getY() + pointArray[4].getY())/2;
-					topMidPath = new Point(topMidPathx, topMidPathy);
-					break;	
-				default:
-					//Nothing happens here
-					break;
-			}
-			var deltaY = topMidPath.y - centerPoint.getY();
-			var deltaX = topMidPath.x - centerPoint.getX();
-			var angleInDegrees = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
-			console.log(angleInDegrees + 90);
-			return angleInDegrees;
-		},
-		
-		//pointstring is formatted in the way the SVG XML will be reading
-		//Namely, a point and the way to traverse to that point
-		pathSetup: function(path, pointArray, hIArray, hOArray) {
-			var svgPath = document.createElementNS(this.NS, 'path');
-			var pointString = '';
-			var x1;
-			var x2;
-			var y1;
-			var y2;
-			var handleOut1;
-			var handleIn2;
-			pointString += 'M' + pointArray[0].getX() + ',' + pointArray[0].getY() + ' ';
-			//Checks 2 points and the angles in between the 2 points
-			for (i = 0; i < pointArray.length-1; i++) {
-				x1 = pointArray[i].getX();
-				y1 = pointArray[i].getY();
-				x2 = pointArray[i + 1].getX();
-				y2 = pointArray[i + 1].getY();
-				handleOut1 = hOArray[i];
-				handleIn2 = hIArray[i+1];
-				if(handleOut1.getX() == 0 && handleOut1.getY() == 0 && handleIn2.getX() == 0 && handleIn2.getY() ==0) {
-						//L is lineto, moving to a point with drawing
-						pointString+= 'L' + x2 + ',' + y2 + ' ';
-				} else {
-					//c is curveto, relative: handleOut, handleIn - endpoint, endpoint - startpoint
-					pointString+= 'c' + (handleOut1.getX())  + ',' + (handleOut1.getY()) + ' ';
-					pointString+= (x2 - x1 + handleIn2.getX()) + ',' + (y2 - y1 + handleIn2.getY()) + ' ';
-					pointString+= (x2 - x1) + ',' + (y2-y1) +  ' ';
+	_transformCheck: function(path, pointArray, type) {
+		//console.log('here for a ' + type );
+		var topMidBoundx = (path.bounds.topRight.getX() + path.bounds.topLeft.getX() )/2;
+		var topMidBoundy = (path.bounds.topRight.getY() + path.bounds.topLeft.getY() )/2;
+		var topMidBound = new Point(topMidBoundx, topMidBoundy);
+		var centerPoint = path.getPosition();
+		var topMidPathx;
+		var topMidPathy;
+		var topMidPath;
+		switch (type) {
+			case 'rect':
+				topMidPathx = (pointArray[1].getX() + pointArray[2].getX() )/2;
+				topMidPathy = (pointArray[1].getY() + pointArray[2].getY() )/2;
+				topMidPath = new Point(topMidPathx, topMidPathy);
+				break;
+			case 'ellipse':
+				topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
+				break;
+			case 'circle':
+				topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
+				break;
+			case 'roundRect':
+				topMidPathx = (pointArray[3].getX() + pointArray[4].getX())/2;
+				topMidPathy = (pointArray[3].getY() + pointArray[4].getY())/2;
+				topMidPath = new Point(topMidPathx, topMidPathy);
+				break;	
+			default:
+				//Nothing happens here
+				break;
+		}
+		var deltaY = topMidPath.y - centerPoint.getY();
+		var deltaX = topMidPath.x - centerPoint.getX();
+		var angleInDegrees = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+		//console.log(angleInDegrees + 90);
+		return angleInDegrees;
+	},
+	
+	//pointstring is formatted in the way the SVG XML will be reading
+	//Namely, a point and the way to traverse to that point
+	pathSetup: function(path, pointArray, hIArray, hOArray) {
+		var svgPath = document.createElementNS(this.NS, 'path');
+		var pointString = '';
+		var x1;
+		var x2;
+		var y1;
+		var y2;
+		var handleOut1;
+		var handleIn2;
+		pointString += 'M' + pointArray[0].getX() + ',' + pointArray[0].getY() + ' ';
+		//Checks 2 points and the angles in between the 2 points
+		for (i = 0; i < pointArray.length-1; i++) {
+			x1 = pointArray[i].getX();
+			y1 = pointArray[i].getY();
+			x2 = pointArray[i + 1].getX();
+			y2 = pointArray[i + 1].getY();
+			handleOut1 = hOArray[i];
+			handleIn2 = hIArray[i+1];
+			if(handleOut1.getX() == 0 && handleOut1.getY() == 0 && handleIn2.getX() == 0 && handleIn2.getY() ==0) {
+					//L is lineto, moving to a point with drawing
+					pointString+= 'L' + x2 + ',' + y2 + ' ';
+			} else {
+				//c is curveto, relative: handleOut, handleIn - endpoint, endpoint - startpoint
+				pointString+= 'c' + (handleOut1.getX())  + ',' + (handleOut1.getY()) + ' ';
+				pointString+= (x2 - x1 + handleIn2.getX()) + ',' + (y2 - y1 + handleIn2.getY()) + ' ';
+				pointString+= (x2 - x1) + ',' + (y2-y1) +  ' ';
 			}
 		}
-			if (path.getClosed())
-			{
-				//Z implies a closed path, connecting the first and last points
-				pointString += 'z';
-			}
-			svgPath.setAttribute('d',pointString);
-			return svgPath;
+		if (!hOArray[hOArray.length - 1].equals([0,0]) && !hIArray[0].equals([0,0])) {
+			handleOut1 = hOArray[hOArray.length - 1];
+			handleIn2 = hIArray[0];
+			// Bezier curve from last point to first
+			x1 = pointArray[pointArray.length - 1].getX();
+			y1 = pointArray[pointArray.length - 1].getY();
+			x2 = pointArray[0].getX();
+			y2 = pointArray[0].getY();
+			pointString+= 'c' + (handleOut1.getX())  + ',' + (handleOut1.getY()) + ' ';
+			pointString+= (x2 - x1 + handleIn2.getX()) + ',' + (y2 - y1 + handleIn2.getY()) + ' ';
+			pointString+= (x2 - x1) + ',' + (y2-y1) +  ' ';
+		}
+		if (path.getClosed())
+		{
+			//Z implies a closed path, connecting the first and last points
+			pointString += 'z';
+		}
+		svgPath.setAttribute('d',pointString);
+		return svgPath;
 	},	
 
 	/**
@@ -402,7 +412,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	* @return {String} type A string labeling which type of object the 
 	* passed in object is
 	*/
-
 	_determineType: function(path, segArray, pointArray, handleInArray, handleOutArray) {
 		var type;
 		var dPoint12;
@@ -440,12 +449,12 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 						checkPointValues = false;
 					}	
 				}	
-				console.log(checkPointValues);
+				//console.log(checkPointValues);
 				if(checkPointValues == true) {
 					//RENAME VARIABLES!!
 					var c1 = Math.round(pointArray[0].getDistance(pointArray[2], false));
 					var c2 = Math.round(pointArray[1].getDistance(pointArray[3], false));
-					console.log(c1 + " " + c2);
+					//console.log(c1 + " " + c2);
 					if(c1 == c2) {
 						type = 'circle';
 					} else {
@@ -457,7 +466,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			if(segArray.length == 4) {
 				dPoint12 = Math.round(pointArray[0].getDistance(pointArray[1], false));
 				dPoint34 = Math.round(pointArray[3].getDistance(pointArray[2], false));
-				console.log(dPoint12 + " " + dPoint34);
+				//console.log(dPoint12 + " " + dPoint34);
 				if(dPoint12 == dPoint34) {
 					type = 'rect';
 				}
@@ -473,7 +482,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		} else {
 			type = null;
 		}
-		console.log(type);
+		//console.log(type);
 		return type;
 	}
 });

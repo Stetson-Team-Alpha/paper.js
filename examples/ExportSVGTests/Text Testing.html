@@ -13,23 +13,32 @@
 
 		function initializePath() {
 			
-			var text = new PointText(new Point(50, 100));
+			/*var text = new PointText(new Point(50, 100));
 			text.fillColor = 'black';
 			text.content = 'This is a test';
 			
 			var text = new PointText(new Point(100, 150));
 			text.fillColor = 'red';
 			text.strokeWidth = '4';
-			text.content = 'This is also a test';
+			text.content = 'This is also a test';*/
 			
 			radius = 50;
 			center = new Point(100,100);
 			var path2 = new Path.Circle(center,radius);
 			path2.strokeColor = 'black';
 			console.log(path2.getSegments());
-			copy = path2.clone();
-			copy.strokeColor = 'blue';
-			copy.rotate(45, new Point(50,100));
+			//copy = path2.clone();
+			//copy.strokeColor = 'blue';
+			point = new Point(120,100);
+			path2.shear(.5, .5);
+			colors = ['red', 'blue', 'green', 'orange'];
+			for (var i in path2.segments) {
+				var p = path2.segments[i].point;
+				var c = new Path.Circle(p, 2);
+				c.fillColor = colors[i];
+			}
+			console.log(path2.segments);
+			//copy.shear(.5, .5);
 			
 			/*var rectangle = new Rectangle(new Point(100,100), new Size(100,50));
 			var path = new Path.Oval(rectangle);
@@ -45,19 +54,15 @@
 			size2 = new Size(20, 20);
 			var path = new Path.RoundRectangle(rectangle, size2);
 			path.strokeColor= 'black';
-			copy = path.clone();
-			point = copy.bounds.topLeft;
-			copy.position = new Point(150, 100);
-			copy.strokeColor = 'blue';*/
+			//copy = path.clone();
+			//point = copy.bounds.topLeft;
+			path.shear(.5, .5);
+			//copy.rotate(45);
+			//copy.strokeColor = 'blue';*/
 			
-			
-			
-
-
-
 			var esvg = new ExportSVG();
 			var output = esvg.exportProject(paper.project);
-			console.log(output);
+			//console.log(output);
 			var test = document.getElementById('svg')
 			test.innerHTML = "";
 			test.appendChild (output);   
