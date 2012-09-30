@@ -253,7 +253,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		}
 		if(path.dashArray[0] != undefined) {
 			var dashVals = '';
-			console.log(path.dashArray);
 			for (var i in path.dashArray) {
 				if(i != path.dashArray.length -1) {
 					dashVals += path.dashArray[i] + ", ";
