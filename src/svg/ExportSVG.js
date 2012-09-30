@@ -199,8 +199,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				break;
 			case 'text':
 				svgEle = document.createElementNS(this.NS, 'text');
-				svgEle.setAttribute('x', path.getPosition().getX());
-				svgEle.setAttribute('y', path.getPosition().getY());
+				svgEle.setAttribute('x', path.getPoint().getX());
+				svgEle.setAttribute('y', path.getPoint().getY());
 				if(path.style.font != undefined) {
 					svgEle.setAttribute('font', path.style.font);
 				}
@@ -231,6 +231,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		if (path.fillColor != undefined) {
 			//Cause of fill issues- CHECK THIS
 			svgEle.setAttribute('fill', path.fillColor.toCssString());
+		} else {
+			svgEle.setAttribute('fill', 'white');
 		}
 		//same thing as stroke color except with stroke width
 		if(path.strokeWidth != undefined){
