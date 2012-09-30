@@ -314,8 +314,9 @@ var ImportSVG = this.ImportSVG = Base.extend(/** @Lends ImportSVG# */{
 					break;
 				case SVGPathSeg.PATHSEG_ARC_ABS:
 				case SVGPathSeg.PATHSEG_ARC_REL:
-					//TODO: Implement Arcs. They're ugly.
-					//http://www.w3.org/TR/SVG/implnote.html
+					//TODO: Implement Arcs.
+					//TODO: Requires changes in Paper.js's Path to do.
+					//TODO: http://www.w3.org/TR/SVG/implnote.html
 					break;
 				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
 				case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
