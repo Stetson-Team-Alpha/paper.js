@@ -22,22 +22,33 @@
 			text.strokeWidth = '4';
 			text.content = 'This is also a test';
 			
-			size5 = new Size(20,20);
-			var point3 = new Point(100, 100);
-			var size3 = new Size(50, 50);
-			var rectangle3 = new Rectangle(point3, size3);
-			var path3 = new Path.RoundRectangle(rectangle3, size5);
-			path3.strokeColor = 'blue';
-			path3.strokeWidth = 2;
-			path3.rotate(45);
-			console.log(path3.getSegments());
+			radius = 50;
+			center = new Point(100,100);
+			var path2 = new Path.Circle(center,radius);
+			path2.strokeColor = 'black';
+			console.log(path2.getSegments());
+			copy = path2.clone();
+			copy.strokeColor = 'blue';
+			copy.rotate(45, new Point(50,100));
 			
-			var size4 = new Size(path3.bounds.height, path3.bounds.width);
-			var rectangle4 = new Rectangle(path3.bounds.topLeft, size4);
+			/*var rectangle = new Rectangle(new Point(100,100), new Size(100,50));
+			var path = new Path.Oval(rectangle);
+			console.log(path.getSegments());
+			path.strokeColor = 'red';
+			copy = path.clone();
+			copy.strokeColor = 'blue';
+			copy.position = new Point(150,100);
+			console.log(copy.getSegments());*/
 			
-			var pathRect = new Path.Rectangle(rectangle4, size5);
-			pathRect.strokeColor = 'red';
-			console.log(pathRect.getSegments());
+			/*size = new Size(150,100);
+			var rectangle = new Rectangle(new Point(100,100), size);
+			size2 = new Size(20, 20);
+			var path = new Path.RoundRectangle(rectangle, size2);
+			path.strokeColor= 'black';
+			copy = path.clone();
+			point = copy.bounds.topLeft;
+			copy.position = new Point(150, 100);
+			copy.strokeColor = 'blue';*/
 			
 			
 			
@@ -45,13 +56,12 @@
 
 
 			var esvg = new ExportSVG();
-			//esvg.exportProject(paper.project);
 			var output = esvg.exportProject(paper.project);
-			   console.log(output);
+			console.log(output);
 			var test = document.getElementById('svg')
-			   test.innerHTML = "";
-			   test.appendChild (output);   
-				  }
+			test.innerHTML = "";
+			test.appendChild (output);   
+		}
 
 		// Reposition the path whenever the window is resized:
 		function onResize(event) {

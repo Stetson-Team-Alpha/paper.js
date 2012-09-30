@@ -102,7 +102,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		return svgG;
 	},
 
-	exportSymbol: function(symbo) {
+	exportSymbol: function(symbol) {
 		var svgS = document.createElementNS(this.NS, 'symbol');
 		if(symbol.id != undefined) {
 			symbol.appendChild('id', symbol.id);
@@ -193,19 +193,18 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				break;
 			case 'circle':
 				svgEle = document.createElementNS(this.NS, 'circle');
-				var radius = (pointArray[2].getX() - pointArray[0].getX()) /2;
-				var cx = pointArray[0].getX() + radius;
-				svgEle.setAttribute('cx', cx);
-				svgEle.setAttribute('cy', pointArray[0].getY());
+				var radius = (pointArray[0].getDistance(pointArray[2], false)) /2;
+				svgEle.setAttribute('cx', path.bounds.center.x);
+				svgEle.setAttribute('cy', path.bounds.center.y);
 				svgEle.setAttribute('r', radius);
 				break;
 			case 'ellipse':
 				svgEle = document.createElementNS(this.NS, 'ellipse');
-				var radiusX = (pointArray[2].getX() - pointArray[0].getX()) / 2;
-				var radiusY = (pointArray[3].getY() - pointArray[1].getY()) /2;
-				var cx = pointArray[0].getX() + radiusX;
-				svgEle.setAttribute('cx', cx);
-				svgEle.setAttribute('cy', pointArray[0].getY());
+				var radiusX = (pointArray[2].getDistance(pointArray[0], false)) / 2;
+				var radiusY = (pointArray[3].getDistance(pointArray[1], false)) /2;
+				//var cx = pointArray[0].getX() + radiusX;
+				svgEle.setAttribute('cx', path.bounds.center.x);
+				svgEle.setAttribute('cy', path.bounds.center.y);
 				svgEle.setAttribute('rx', radiusX);
 				svgEle.setAttribute('ry', radiusY);
 				break;
@@ -262,7 +261,31 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
 				break;
 		}
-
+		if(type != 'text' && type != undefined && type != 'polygon' &&  type != 'polyline' && type != 'line') {
+			var angle = this._transformCheck(path, pointArray, type) + 90;
+			//var aroundX;
+			//var aroundY;
+			if(angle != 0) {
+				if(type == 'rect' || type == 'roundRect') {
+					/*var aroundX = (pointArray[1].getX() + pointArray[3].getX()) /2;
+					var aroundY = (pointArray[1].getY() + pointArray[3].getY()) /2;
+					console.log('rotated around center');
+				} else if (type == 'roundRect') {
+				} else {
+					aroundX = Math.round(path.getPosition().getX());
+					aroundY = Math.round(path.getPosition().getY())
+				}
+				svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + aroundX + ',' + aroundY + ')');*/
+					svgEle = document.createElementNS(this.NS, 'path');
+					svgEle = this.pathSetup(path, pointArray, handleInArray, handleOutArray);
+				} else {
+					svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + path.bounds.center.x + ',' + path.bounds.center.y + ')');
+				}
+			}
+		}
+		if(type == 'text') {
+			svgEle.setAttribute('transform','rotate(' + path.matrix.getRotation() + ',' + path.getPoint().getX() + ',' +path.getPoint().getY() +')');
+		}
 		//checks if there is a stroke color in the passed in path
 		//adds an SVG element attribute with the defined stroke color
 		if(path.id != undefined) {
@@ -321,13 +344,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			}
 			svgEle.setAttribute('visibility', visString);
 		}
-		if(type != 'text' && type != undefined) {
-			var angle = this._transformCheck(path, pointArray, type) + 90;
-			svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + Math.round(path.getPosition().getX()) + ',' + Math.round(path.getPosition().getY()) + ')');
-		}
-		if(type == 'text') {
-			svgEle.setAttribute('transform','rotate(' + path.matrix.getRotation() + ',' + path.getPoint().getX() + ',' +path.getPoint().getY() +')');
-		}
 		return svgEle;
 	},
 
@@ -354,16 +370,16 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 					topMidPath = new Point(pointArray[1].getX(), pointArray[1].getY());
 					break;
 				case 'roundRect':
-					topMidPathx = (pointArray[3].getX() + pointArray[4].getX() )/2;
-					topMidPathy = (pointArray[3].getY() + pointArray[4].getY() )/2;
+					topMidPathx = (pointArray[3].getX() + pointArray[4].getX())/2;
+					topMidPathy = (pointArray[3].getY() + pointArray[4].getY())/2;
 					topMidPath = new Point(topMidPathx, topMidPathy);
-					break;
+					break;	
 				default:
 					//Nothing happens here
 					break;
 			}
-			var deltaY = topMidPathy - centerPoint.getY();
-			var deltaX = topMidPathx - centerPoint.getX();
+			var deltaY = topMidPath.y - centerPoint.getY();
+			var deltaX = topMidPath.x - centerPoint.getX();
 			var angleInDegrees = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
 			console.log(angleInDegrees + 90);
 			return angleInDegrees;
@@ -450,14 +466,19 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			} else if(segArray.length == 4) {
 				var checkPointValues = true;
 				for(i = 0; i < pointArray.length && checkPointValues == true; i++) {
-					if(handleInArray[i].getX() != 0 || handleInArray[i].getY() != 0 && Math.abs(handleInArray[i].getX()) === Math.abs(handleOutArray[i].getX()) && Math.abs(handleInArray[i].getY()) === Math.abs(handleOutArray[i].getY())) {
+					if(handleInArray[i].getX() != 0 || handleInArray[i].getY() != 0 && Math.round(Math.abs(handleInArray[i].getX())) === Math.round(Math.abs(handleOutArray[i].getX())) && Math.round(Math.abs(handleInArray[i].getY())) === Math.round(Math.abs(handleOutArray[i].getY()))) {
 						checkPointValues = true;
 					} else {
 						checkPointValues = false;
 					}	
 				}	
+				console.log(checkPointValues);
 				if(checkPointValues == true) {
-					if(handleInArray[0].getY() === handleInArray[3].getX() && handleOutArray[0].getY() === handleOutArray[3].getX()) {
+					//RENAME VARIABLES!!
+					var c1 = Math.round(pointArray[0].getDistance(pointArray[2], false));
+					var c2 = Math.round(pointArray[1].getDistance(pointArray[3], false));
+					console.log(c1 + " " + c2);
+					if(c1 == c2) {
 						type = 'circle';
 					} else {
 						type = 'ellipse';
@@ -484,6 +505,7 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		} else {
 			type = null;
 		}
+		console.log(type);
 		return type;
 	}
 });

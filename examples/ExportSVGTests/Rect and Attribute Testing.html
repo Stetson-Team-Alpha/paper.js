@@ -29,13 +29,13 @@
 			var point22 = new Point(100, 100);
 			var path2 = new Path.Rectangle(point2, point22);
 			path2.strokeColor = 'red';
-			path2.strokeWidth = '4';
+			path2.strokeWidth = '4px';
 			path2.fillColor = 'blue';
 			path2.id = "square2";
 			path2.strokeCap = "butt";
 			path2.opacity = "1";
 			path2.dashArray = "[1, 1]";
-			path2.dashOffset = "10";
+			path2.dashOffset = "40";
 	
 			var point3 = new Point(150, 150);
 			var size3 = new Size(50, 50);
@@ -52,7 +52,6 @@
 			path4.fillColor='purple';
 			
 			var esvg = new ExportSVG();
-		//esvg.exportProject(paper.project);
 			var output = esvg.exportProject(paper.project);
 			console.log(output);
 			var test = document.getElementById('svg')
