@@ -67,7 +67,11 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	 * SVG group
 	 */
 	exportLayer: function(layer) {
+		if(layer.definition) {
+			return this.exportSymbol(layer);
+		} else {
 		return this.exportGroup(layer);
+		}
 	},
 
 
@@ -88,6 +92,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			curChild = group.children[i];
 			if (curChild.children) {
 				svgG.appendChild(this.exportGroup(curChild));
+			} else if(curChild.definition){
+				svG.appendChild(this.exportSymbol(curChild));
 			} else {
 				svgG.appendChild(this.exportPath(curChild));
 			}
@@ -96,6 +102,17 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		return svgG;
 	},
 
+	exportSymbol: function(symbo) {
+		var svgS = document.createElementNS(this.NS, 'symbol');
+		if(symbol.id != undefined) {
+			symbol.appendChild('id', symbol.id);
+		}
+		if(symbol.definition != undefined) {
+			symbol.appendChild(this.exportPath(symbol.definition));
+		}
+		return svgS;
+	},
+	
 	/**
 	 * 
 	 * Takes the path and puts it in
@@ -117,6 +134,8 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		//finding the type of path to export
 		if(path.content){
 			type = 'text';
+		} else if(path.symbol) {
+			type = 'symbol';
 		} else {
 			//Values are only defined if the path is not text because
 			// text does not have these values
@@ -138,23 +157,23 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				var width = pointArray[0].getDistance(pointArray[3], false);
 				var height = pointArray[0].getDistance(pointArray[1], false);
 				svgEle = document.createElementNS(this.NS, 'rect');
-				svgEle.setAttribute('x', 100);
-				svgEle.setAttribute('y', 100);
+				svgEle.setAttribute('x', path.bounds.topLeft.getX());
+				svgEle.setAttribute('y', path.bounds.topLeft.getY());
 				svgEle.setAttribute('width', width);
 				svgEle.setAttribute('height', height);
 				break;
 			case 'roundRect':
 				var d1 = pointArray[1].getDistance(pointArray[6], false);
 				var d2 = pointArray[0].getDistance(pointArray[7], false);
-				var d3 = (blah - blah2) / 2;
+				var d3 = (d1 - d2) / 2;
 				var d4 = pointArray[0].getDistance(pointArray[3], false);
 				var d5 = pointArray[1].getDistance(pointArray[2], false);
-				var d6 = (blarg - blarg2) / 2;
+				var d6 = (d4 - d5) / 2;
 				var point = new Point((pointArray[3].getX() - d3), (pointArray[2].getY() - d6)); 
 				var point2 = new Point((pointArray[0].getX() - d3), (pointArray[1].getY() + d6));
 				var point3 = new Point((pointArray[4].getX() + d3), (pointArray[5].getY() - d6));
-				var width = Math.round(d3);
-				var height = Math.round(d6);
+				var width = Math.round(d1);
+				var height = Math.round(d4);
 				var rx = pointArray[3].getX() - point.x;
 				var ry = pointArray[2].getY() - point.y;
 				svgEle = document.createElementNS(this.NS, 'rect');
@@ -221,6 +240,22 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				}
 				svgEle.textContent = path.getContent();
 				//svgEle.insertData(path.getContent()); //Gives Error
+				break;
+			case 'symbol':
+				svgEle = document.createElementNS(this.NS,'use');
+				if(path.height != undefined) {
+					svgEle.setAttribute('height', path.height);
+				}
+				if(path.width != undefined) {
+					svgEle.setAttribute('width', path.width);
+				}
+				svgEle.setAttribute('x', path.bounds.topLeft.getX());
+				svgEle.setAttribute('y', path.bounds.topLeft.getY());
+				var symbolName = '';
+				for( var i in path.project.symbols) {
+					symbolName = path.symbol == path.project.symbols[i]? path.project.symbols[i].id : symbolName;
+				}
+				svgEle.setAttribute('xlink:href', ('#' + symbolName));
 				break;
 			default:
 				svgEle = document.createElementNS(this.NS, 'path');
@@ -289,6 +324,9 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 		if(type != 'text' && type != undefined) {
 			var angle = this._transformCheck(path, pointArray, type) + 90;
 			svgEle.setAttribute('transform', 'rotate(' + Math.round(angle) + ',' + Math.round(path.getPosition().getX()) + ',' + Math.round(path.getPosition().getY()) + ')');
+		}
+		if(type == 'text') {
+			svgEle.setAttribute('transform','rotate(' + path.matrix.getRotation() + ',' + path.getPoint().getX() + ',' +path.getPoint().getY() +')');
 		}
 		return svgEle;
 	},
