@@ -67,9 +67,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 	 * SVG group
 	 */
 	exportLayer: function(layer) {
-		if(layer.definition) {
-			return this.exportSymbol(layer);
-		} else {
 		return this.exportGroup(layer);
 		}
 	},
@@ -92,25 +89,12 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 			curChild = group.children[i];
 			if (curChild.children) {
 				svgG.appendChild(this.exportGroup(curChild));
-			} else if(curChild.definition){
-				svG.appendChild(this.exportSymbol(curChild));
 			} else {
 				svgG.appendChild(this.exportPath(curChild));
 			}
 		}
 
 		return svgG;
-	},
-
-	exportSymbol: function(symbol) {
-		var svgS = document.createElementNS(this.NS, 'symbol');
-		if(symbol.id != undefined) {
-			symbol.appendChild('id', symbol.id);
-		}
-		if(symbol.definition != undefined) {
-			symbol.appendChild(this.exportPath(symbol.definition));
-		}
-		return svgS;
 	},
 	
 	/**
@@ -239,22 +223,6 @@ var ExportSVG = this.ExportSVG = Base.extend(/** @Lends ExportSVG# */{
 				}
 				svgEle.textContent = path.getContent();
 				//svgEle.insertData(path.getContent()); //Gives Error
-				break;
-			case 'symbol':
-				svgEle = document.createElementNS(this.NS,'use');
-				if(path.height != undefined) {
-					svgEle.setAttribute('height', path.height);
-				}
-				if(path.width != undefined) {
-					svgEle.setAttribute('width', path.width);
-				}
-				svgEle.setAttribute('x', path.bounds.topLeft.getX());
-				svgEle.setAttribute('y', path.bounds.topLeft.getY());
-				var symbolName = '';
-				for( var i in path.project.symbols) {
-					symbolName = path.symbol == path.project.symbols[i]? path.project.symbols[i].id : symbolName;
-				}
-				svgEle.setAttribute('xlink:href', ('#' + symbolName));
 				break;
 			default:
 				svgEle = document.createElementNS(this.NS, 'path');
