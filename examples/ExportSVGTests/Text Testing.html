@@ -12,6 +12,7 @@
 		<script type="text/paperscript" canvas="canvas">
 
 		function initializePath() {
+			
 			var text = new PointText(new Point(50, 100));
 			text.fillColor = 'black';
 			text.content = 'This is a test';
@@ -50,7 +51,7 @@
 			var test = document.getElementById('svg')
 			   test.innerHTML = "";
 			   test.appendChild (output);   
-		}
+				  }
 
 		// Reposition the path whenever the window is resized:
 		function onResize(event) {
