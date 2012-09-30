@@ -8,12 +8,10 @@
 
 </head>
 <body>	
-	<canvas id="canvas" width="500px" height="1000px"></canvas>
+	<canvas id="canvas" width="500" height="350"></canvas>
 		<script type="text/paperscript" canvas="canvas">
-		initializePath();
 
 		function initializePath() {
-			
 			
 			var text = new PointText(new Point(50, 100));
 			text.fillColor = 'black';
@@ -23,6 +21,28 @@
 			text.fillColor = 'red';
 			text.strokeWidth = '4';
 			text.content = 'This is also a test';
+			
+			size5 = new Size(20,20);
+			var point3 = new Point(100, 100);
+			var size3 = new Size(50, 50);
+			var rectangle3 = new Rectangle(point3, size3);
+			var path3 = new Path.RoundRectangle(rectangle3, size5);
+			path3.strokeColor = 'blue';
+			path3.strokeWidth = 2;
+			path3.rotate(45);
+			console.log(path3.getSegments());
+			
+			var size4 = new Size(path3.bounds.height, path3.bounds.width);
+			var rectangle4 = new Rectangle(path3.bounds.topLeft, size4);
+			
+			var pathRect = new Path.Rectangle(rectangle4, size5);
+			pathRect.strokeColor = 'red';
+			console.log(pathRect.getSegments());
+			
+			
+			
+
+
 
 			var esvg = new ExportSVG();
 			//esvg.exportProject(paper.project);
