@@ -189,8 +189,8 @@ test('compare invalid round rectangle values', function() {
 		height = null;
 	shape.setAttribute('x', x);
 	shape.setAttribute('y', y);
-	shape.setAttribute('rx', rx);
-	shape.setAttribute('ry', ry);
+	shape.setAttribute('rx', 1);
+	shape.setAttribute('ry', 1);
 	shape.setAttribute('width', width);
 	shape.setAttribute('height', height);
 
